@@ -1,0 +1,8 @@
+/HelloWorlders_php/.env
+/HelloWorlders_php/.vscode
+/HelloWorlders_php/config/*
+/HelloWorlders_php/data/*
+/HelloWorlders_php/logs/*
+/HelloWorlders_php/www/.idea/*
+.DS_Store
+/HelloWorlders_php/buildtest
