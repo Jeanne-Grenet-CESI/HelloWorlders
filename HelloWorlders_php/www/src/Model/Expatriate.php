@@ -1,6 +1,8 @@
 <?php
+
 namespace Src\Model;
-class Expatriate {
+class Expatriate
+{
     private ?int $Id = null;
     private ?string $FirstName = null;
     private ?string $LastName = null;
@@ -27,23 +29,23 @@ class Expatriate {
         return $this;
     }
 
-    public function getFirstName(): ?string
+    public function getFirstname(): ?string
     {
         return $this->FirstName;
     }
 
-    public function setFirstName(?string $FirstName): Expatriate
+    public function setFirstname(?string $FirstName): Expatriate
     {
         $this->FirstName = $FirstName;
         return $this;
     }
 
-    public function getLastName(): ?string
+    public function getLastname(): ?string
     {
         return $this->LastName;
     }
 
-    public function setLastName(?string $LastName): Expatriate
+    public function setLastname(?string $LastName): Expatriate
     {
         $this->LastName = $LastName;
         return $this;
@@ -168,6 +170,115 @@ class Expatriate {
     {
         $this->Description = $Description;
         return $this;
+    }
+
+    public static function SqlAdd(Expatriate $expatriate)
+    {
+        try {
+            $request = BDD::getInstance()->prepare("
+            INSERT INTO expatriate (
+                Firstname, Lastname, Email, ArrivalDate, DepartureDate, Latitude, Longitude, 
+                ImageRepository, ImageFileName, Gender, Age, Username, Description
+            ) VALUES (
+                :Firstname, :Lastname, :Email, :ArrivalDate, :DepartureDate, :Latitude, :Longitude, 
+                :ImageRepository, :ImageFileName, :Gender, :Age, :Username, :Description
+            )
+        ");
+
+            $request->bindValue(':FirstName', $expatriate->getFirstname());
+            $request->bindValue(':LastName', $expatriate->getLastname());
+            $request->bindValue(':Email', $expatriate->getEmail());
+            $request->bindValue(':ArrivalDate', $expatriate->getArrivalDate()?->format('Y-m-d'));
+            $request->bindValue(':DepartureDate', $expatriate->getDepartureDate()?->format('Y-m-d'));
+            $request->bindValue(':Latitude', $expatriate->getLatitude());
+            $request->bindValue(':Longitude', $expatriate->getLongitude());
+            $request->bindValue(':ImageRepository', $expatriate->getImageRepository());
+            $request->bindValue(':ImageFileName', $expatriate->getImageFileName());
+            $request->bindValue(':Gender', $expatriate->getGender()?->value); // Conversion enum to string
+            $request->bindValue(':Age', $expatriate->getAge());
+            $request->bindValue(':Username', $expatriate->getUsername());
+            $request->bindValue(':Description', $expatriate->getDescription());
+
+            $request->execute();
+
+            return BDD::getInstance()->lastInsertId();
+        } catch (\PDOException $e) {
+            return $e->getMessage();
+        }
+    }
+
+
+    public static function SqlGetAll()
+    {
+        $request = BDD::getInstance()->prepare('SELECT * FROM expatriate ORDER BY Id DESC');
+        $request->execute();
+        $expatriatesSql = $request->fetchAll(\PDO::FETCH_ASSOC);
+        $expatriatesObjet = [];
+        foreach ($expatriatesSql as $expatriateSql) {
+            $expatriate = new Expatriate();
+            $expatriate->setId($expatriateSql["Id"])
+                ->setFirstname($expatriateSql["Firstname"])
+                ->setLastname($expatriateSql["Lastname"])
+                ->setEmail($expatriateSql["Email"])
+                ->setArrivalDate(new \DateTime($expatriateSql["ArrivalDate"]))
+                ->setDepartureDate(new \DateTime($expatriateSql["DepartureDate"]))
+                ->setLatitude($expatriateSql["Latitude"])
+                ->setLongitude($expatriateSql["Longitude"])
+                ->setImageRepository($expatriateSql["ImageRepository"])
+                ->setImageFileName($expatriateSql["ImageFileName"])
+                ->setAge($expatriateSql["Age"])
+                ->setUsername($expatriateSql["Username"])
+                ->setDescription($expatriateSql["Description"]);
+            if (!empty($data['Gender'])) {
+                $expatriate->setGender(Gender::from($data['Gender']));
+            } else {
+                $expatriate->setGender(null);
+            }
+            $expatriatesObjet[] = $expatriate;
+        }
+        return $expatriatesObjet;
+    }
+
+    public static function SqlUpdate(Expatriate $expatriate)
+    {
+        try {
+            $request = BDD::getInstance()->prepare("
+            UPDATE expatriate SET 
+                Firstname = :Firstname, 
+                Lastname = :Lastname, 
+                Email = :Email, 
+                ArrivalDate = :ArrivalDate, 
+                DepartureDate = :DepartureDate, 
+                Latitude = :Latitude, 
+                Longitude = :Longitude, 
+                ImageRepository = :ImageRepository, 
+                ImageFileName = :ImageFileName,
+                Gender = :Gender,
+                Age = :Age,
+                Username = :Username,
+                Description = :Description
+            WHERE Id = :Id  
+        ");
+
+            $request->bindValue(':Id', $expatriate->getId());
+            $request->bindValue(':Firstname', $expatriate->getFirstname());
+            $request->bindValue(':Lastname', $expatriate->getLastname());
+            $request->bindValue(':Email', $expatriate->getEmail());
+            $request->bindValue(':ArrivalDate', $expatriate->getArrivalDate()?->format('Y-m-d'));
+            $request->bindValue(':DepartureDate', $expatriate->getDepartureDate()?->format('Y-m-d'));
+            $request->bindValue(':Latitude', $expatriate->getLatitude());
+            $request->bindValue(':Longitude', $expatriate->getLongitude());
+            $request->bindValue(':ImageRepository', $expatriate->getImageRepository());
+            $request->bindValue(':ImageFileName', $expatriate->getImageFileName());
+            $request->bindValue(':Gender', $expatriate->getGender()?->value);
+            $request->bindValue(':Age', $expatriate->getAge());
+            $request->bindValue(':Username', $expatriate->getUsername());
+            $request->bindValue(':Description', $expatriate->getDescription());
+            $request->execute();
+            return BDD::getInstance()->lastInsertId();
+        } catch (\PDOException $e) {
+            return $e->getMessage();
+        }
     }
 }
 
