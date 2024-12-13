@@ -1,0 +1,5 @@
+<h1>Voici les 20 derniers article</h1>
+{% for expatriate in expatriates %}
+    <h2>Titre : {{ expatriate.Firstname }}</h2>
+    <p>{{ expatriate.description }}</p>
+{% endfor %}
