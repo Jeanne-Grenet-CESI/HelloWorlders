@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{% block title %}Hello Worlders{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5A803D',
+                        secondary: '#D57E7E',
+                    },
+                },
+            },
+        };
+    </script>
+</head>
+
+<body class="font-sans">
+
+
+<nav class="py-2 shadow-md">
+    <div class="container mx-auto flex justify-between items-center px-4">
+
+        <a href="/" class="flex items-center">
+            <img src="/assets/images/helloworlders.svg" alt="Hello Worlders Logo" class="h-24 w-24 mr-3">
+        </a>
+
+        <ul class="flex space-x-6">
+            <li class="p-3 bg-secondary rounded-md hover:opacity-80">
+                <a href="Expatriate/add">Ajouter</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div>
+
+    {% block body %}
+    {% endblock %}
+</div>
+
+</body>
+</html>

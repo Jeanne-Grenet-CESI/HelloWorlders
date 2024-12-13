@@ -1,0 +1,86 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <h1 class="text-3xl font-bold text-primary mb-6">Ajouter un expatrié</h1>
+
+    <form method="POST" action="/expatriate/add" class="bg-white p-6 rounded shadow-md max-w-lg mx-auto">
+        <!-- Prénom -->
+        <div class="mb-4">
+            <label for="Firstname" class="block text-sm font-medium text-gray-700">Prénom</label>
+            <input type="text" id="Firstname" name="Firstname" class="mt-1 block w-full p-2 border rounded focus:outline-none focus:ring-primary focus:border-primary" required>
+        </div>
+
+        <!-- Nom -->
+        <div class="mb-4">
+            <label for="Lastname" class="block text-sm font-medium text-gray-700">Nom</label>
+            <input type="text" id="Lastname" name="Lastname" class="mt-1 block w-full p-2 border rounded focus:outline-none focus:ring-primary focus:border-primary" required>
+        </div>
+
+        <!-- Email -->
+        <div class="mb-4">
+            <label for="Email" class="block text-sm font-medium text-gray-700">Email</label>
+            <input type="email" id="Email" name="Email" class="mt-1 block w-full p-2 border rounded focus:outline-none focus:ring-primary focus:border-primary" required>
+        </div>
+
+        <!-- Date d'arrivée -->
+        <div class="mb-4">
+            <label for="ArrivalDate" class="block text-sm font-medium text-gray-700">Date d'arrivée</label>
+            <input type="date" id="ArrivalDate" name="ArrivalDate" class="mt-1 block w-full p-2 border rounded focus:outline-none focus:ring-primary focus:border-primary" required>
+        </div>
+
+        <!-- Date de départ -->
+        <div class="mb-4">
+            <label for="DepartureDate" class="block text-sm font-medium text-gray-700">Date de départ</label>
+            <input type="date" id="DepartureDate" name="DepartureDate" class="mt-1 block w-full p-2 border rounded focus:outline-none focus:ring-primary focus:border-primary">
+        </div>
+
+        <!-- Latitude -->
+        <div class="mb-4">
+            <label for="Latitude" class="block text-sm font-medium text-gray-700">Latitude</label>
+            <input type="number" step="any" id="Latitude" name="Latitude" class="mt-1 block w-full p-2 border rounded focus:outline-none focus:ring-primary focus:border-primary">
+        </div>
+
+        <!-- Longitude -->
+        <div class="mb-4">
+            <label for="Longitude" class="block text-sm font-medium text-gray-700">Longitude</label>
+            <input type="number" step="any" id="Longitude" name="Longitude" class="mt-1 block w-full p-2 border rounded focus:outline-none focus:ring-primary focus:border-primary">
+        </div>
+
+        <!-- Genre -->
+        <div class="mb-4">
+            <label for="Gender" class="block text-sm font-medium text-gray-700">Genre</label>
+            <select id="Gender" name="Gender" class="mt-1 block w-full p-2 border rounded focus:outline-none focus:ring-primary focus:border-primary">
+                <option value="men">Homme</option>
+                <option value="women">Femme</option>
+                <option value="other">Autre</option>
+            </select>
+        </div>
+
+        <!-- Âge -->
+        <div class="mb-4">
+            <label for="Age" class="block text-sm font-medium text-gray-700">Âge</label>
+            <input type="number" id="Age" name="Age" class="mt-1 block w-full p-2 border rounded focus:outline-none focus:ring-primary focus:border-primary">
+        </div>
+
+        <!-- Nom d'utilisateur -->
+        <div class="mb-4">
+            <label for="Username" class="block text-sm font-medium text-gray-700">Nom d'utilisateur</label>
+            <input type="text" id="Username" name="Username" class="mt-1 block w-full p-2 border rounded focus:outline-none focus:ring-primary focus:border-primary">
+        </div>
+
+        <!-- Description -->
+        <div class="mb-4">
+            <label for="Description" class="block text-sm font-medium text-gray-700">Description</label>
+            <textarea id="Description" name="Description" rows="4" class="mt-1 block w-full p-2 border rounded focus:outline-none focus:ring-primary focus:border-primary"></textarea>
+        </div>
+
+        <!-- Bouton d'envoi -->
+        <div class="flex justify-end">
+            <button type="submit" class="px-4 py-2 bg-primary text-white font-bold rounded hover:bg-primary-dark">
+                Ajouter
+            </button>
+        </div>
+    </form>
+
+{% endblock %}
