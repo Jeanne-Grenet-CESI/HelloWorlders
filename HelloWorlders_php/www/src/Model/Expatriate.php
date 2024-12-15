@@ -11,9 +11,10 @@ class Expatriate
     private ?\DateTime $DepartureDate = null;
     private ?float $Latitude = null;
     private ?float $Longitude = null;
+    private ?string $Country = null;
     private ?string $ImageRepository = null;
     private ?string $ImageFileName = null;
-    private ?Gender $Gender = null;
+    private ?string $Gender = null;
     private ?int $Age = null;
     private ?string $Username = null;
     private ?string $Description = null;
@@ -128,12 +129,12 @@ class Expatriate
         return $this;
     }
 
-    public function getGender(): ?Gender
+    public function getGender(): ?string
     {
         return $this->Gender;
     }
 
-    public function setGender(?Gender $Gender): Expatriate
+    public function setGender(?string $Gender): Expatriate
     {
         $this->Gender = $Gender;
         return $this;
@@ -171,30 +172,41 @@ class Expatriate
         $this->Description = $Description;
         return $this;
     }
+    public function getCountry(): ?string
+    {
+        return $this->Country;
+    }
+
+    public function setCountry(?string $Country): Expatriate
+    {
+        $this->Country = $Country;
+        return $this;
+    }
 
     public static function SqlAdd(Expatriate $expatriate)
     {
         try {
             $request = BDD::getInstance()->prepare("
             INSERT INTO expatriate (
-                Firstname, Lastname, Email, ArrivalDate, DepartureDate, Latitude, Longitude, 
+                Firstname, Lastname, Email, ArrivalDate, DepartureDate, Latitude, Longitude, Country,
                 ImageRepository, ImageFileName, Gender, Age, Username, Description
             ) VALUES (
-                :Firstname, :Lastname, :Email, :ArrivalDate, :DepartureDate, :Latitude, :Longitude, 
+                :Firstname, :Lastname, :Email, :ArrivalDate, :DepartureDate, :Latitude, :Longitude, :Country,
                 :ImageRepository, :ImageFileName, :Gender, :Age, :Username, :Description
             )
         ");
 
-            $request->bindValue(':FirstName', $expatriate->getFirstname());
-            $request->bindValue(':LastName', $expatriate->getLastname());
+            $request->bindValue(':Firstname', $expatriate->getFirstname());
+            $request->bindValue(':Lastname', $expatriate->getLastname());
             $request->bindValue(':Email', $expatriate->getEmail());
             $request->bindValue(':ArrivalDate', $expatriate->getArrivalDate()?->format('Y-m-d'));
             $request->bindValue(':DepartureDate', $expatriate->getDepartureDate()?->format('Y-m-d'));
             $request->bindValue(':Latitude', $expatriate->getLatitude());
             $request->bindValue(':Longitude', $expatriate->getLongitude());
+            $request->bindValue(':Country', $expatriate->getCountry());
             $request->bindValue(':ImageRepository', $expatriate->getImageRepository());
             $request->bindValue(':ImageFileName', $expatriate->getImageFileName());
-            $request->bindValue(':Gender', $expatriate->getGender()?->value); // Conversion enum to string
+            $request->bindValue(':Gender', $expatriate->getGender());
             $request->bindValue(':Age', $expatriate->getAge());
             $request->bindValue(':Username', $expatriate->getUsername());
             $request->bindValue(':Description', $expatriate->getDescription());
@@ -224,16 +236,13 @@ class Expatriate
                 ->setDepartureDate(new \DateTime($expatriateSql["DepartureDate"]))
                 ->setLatitude($expatriateSql["Latitude"])
                 ->setLongitude($expatriateSql["Longitude"])
+                ->setCountry($expatriateSql["Country"])
                 ->setImageRepository($expatriateSql["ImageRepository"])
                 ->setImageFileName($expatriateSql["ImageFileName"])
                 ->setAge($expatriateSql["Age"])
                 ->setUsername($expatriateSql["Username"])
-                ->setDescription($expatriateSql["Description"]);
-            if (!empty($data['Gender'])) {
-                $expatriate->setGender(Gender::from($data['Gender']));
-            } else {
-                $expatriate->setGender(null);
-            }
+                ->setDescription($expatriateSql["Description"])
+                ->setGender($expatriateSql["Gender"]);
             $expatriatesObjet[] = $expatriate;
         }
         return $expatriatesObjet;
@@ -270,7 +279,7 @@ class Expatriate
             $request->bindValue(':Longitude', $expatriate->getLongitude());
             $request->bindValue(':ImageRepository', $expatriate->getImageRepository());
             $request->bindValue(':ImageFileName', $expatriate->getImageFileName());
-            $request->bindValue(':Gender', $expatriate->getGender()?->value);
+            $request->bindValue(':Gender', $expatriate->getGender());
             $request->bindValue(':Age', $expatriate->getAge());
             $request->bindValue(':Username', $expatriate->getUsername());
             $request->bindValue(':Description', $expatriate->getDescription());
@@ -280,11 +289,7 @@ class Expatriate
             return $e->getMessage();
         }
     }
-}
 
-enum Gender: string
-{
-    case Men = 'men';
-    case Women = 'women';
-    case Other = 'other';
+
+
 }

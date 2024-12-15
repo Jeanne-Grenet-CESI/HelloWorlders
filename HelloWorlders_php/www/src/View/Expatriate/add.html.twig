@@ -1,0 +1,129 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <h1 class="text-3xl font-bold text-primary mb-6 text-center">Ajouter un expatrié</h1>
+
+    <form method="POST" action="/expatriate/add" class="bg-white p-6 rounded shadow-md max-w-2xl mx-auto">
+
+        <div class="mb-4 flex gap-4">
+            <div class="flex gap-2 items-center w-full">
+                <label for="Firstname" class="block text-sm text-gray-700 flex">
+                    Prénom <span class="text-secondary">*</span>
+                </label>
+                <input type="text" id="Firstname" name="Firstname"
+                       class="mt-1 block w-full p-2 border rounded focus:outline-none focus:ring-primary focus:border-primary"
+                       required>
+            </div>
+            <div class="flex gap-2 items-center w-full">
+                <label for="Lastname" class="block text-sm text-gray-700 flex">
+                    Nom <span class="text-secondary">*</span>
+                </label>
+                <input type="text" id="Lastname" name="Lastname"
+                       class="mt-1 block w-full p-2 border rounded focus:outline-none focus:ring-primary focus:border-primary"
+                       required>
+            </div>
+        </div>
+
+        <div class="mb-4 flex gap-4">
+            <div class="flex gap-2 items-center w-[15rem]">
+                <label for="Gender" class="block text-sm text-gray-700">Genre</label>
+                <select id="Gender" name="Gender"
+                        class="mt-1 block w-full p-2 border rounded focus:outline-none focus:ring-primary focus:border-primary">
+                    <option value="men">Homme</option>
+                    <option value="women">Femme</option>
+                    <option value="other">Autre</option>
+                </select>
+            </div>
+
+            <div class="flex gap-2 items-center w-full">
+                <label for="Email" class="block text-sm text-gray-700 flex">
+                    Email <span class="text-secondary">*</span>
+                </label>
+                <input type="email" id="Email" name="Email"
+                       class="mt-1 block w-full p-2 border rounded focus:outline-none focus:ring-primary focus:border-primary"
+                       required>
+            </div>
+        </div>
+
+        <div class="mb-4 flex gap-4">
+            <div class="flex gap-2 items-center w-full">
+                <label for="ArrivalDate" class="block text-sm text-gray-700 flex">
+                    Date d'arrivée <span class="text-secondary">*</span>
+                </label>
+                <input type="date" id="ArrivalDate" name="ArrivalDate"
+                       class="mt-1 block w-full p-2 border rounded focus:outline-none focus:ring-primary focus:border-primary"
+                       required>
+            </div>
+            <div class="flex gap-2 items-center w-full">
+                <label for="DepartureDate" class="block text-sm text-gray-700">Date de départ</label>
+                <input type="date" id="DepartureDate" name="DepartureDate"
+                       class="mt-1 block w-full p-2 border rounded focus:outline-none focus:ring-primary focus:border-primary">
+            </div>
+        </div>
+
+        <div class="mb-4 flex gap-4">
+            <div class="flex gap-2 items-center w-[15rem]">
+                <label for="Age" class="block text-sm text-gray-700">Âge</label>
+                <input type="number" id="Age" name="Age"
+                       class="mt-1 block w-full p-2 border rounded focus:outline-none focus:ring-primary focus:border-primary">
+            </div>
+
+            <div class="flex gap-2 items-center w-full">
+                <label for="Username" class="block text-sm text-gray-700">Nom d'utilisateur</label>
+                <input type="text" id="Username" name="Username"
+                       class="mt-1 block w-full p-2 border rounded focus:outline-none focus:ring-primary focus:border-primary">
+            </div>
+        </div>
+
+        <div class="mb-4 flex flex-col gap-2">
+            <label for="map" class="block text-sm text-gray-700 flex">
+                Localisation <span class="text-secondary">*</span>
+            </label>
+            <div id="map" style="height: 300px; width: 100%;"></div>
+        </div>
+
+        <input type="hidden" id="Latitude" name="Latitude" required>
+        <input type="hidden" id="Longitude" name="Longitude" required>
+
+        <div class="mb-4">
+            <label for="Description" class="block text-sm text-gray-700">Description</label>
+            <textarea id="Description" name="Description" rows="4"
+                      class="mt-1 block w-full p-2 border rounded focus:outline-none focus:ring-primary focus:border-primary"></textarea>
+        </div>
+
+        <div class="flex justify-end">
+            <button type="submit" class="px-4 py-2 bg-primary text-white font-bold rounded hover:bg-primary-dark">
+                Ajouter
+            </button>
+        </div>
+    </form>
+
+    <script>
+        const map = L.map('map').setView([48.8566, 2.3522], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        let marker = L.marker([48.8566, 2.3522], {draggable: true}).addTo(map);
+
+        const updateLatLngFields = (lat, lng) => {
+            document.getElementById('Latitude').value = lat;
+            document.getElementById('Longitude').value = lng;
+        };
+
+        updateLatLngFields(48.8566, 2.3522);
+
+        marker.on('dragend', (e) => {
+            const {lat, lng} = e.target.getLatLng();
+            updateLatLngFields(lat, lng);
+        });
+
+        map.on('click', (e) => {
+            const {lat, lng} = e.latlng;
+            marker.setLatLng([lat, lng]);
+            updateLatLngFields(lat, lng);
+        });
+    </script>
+{% endblock %}

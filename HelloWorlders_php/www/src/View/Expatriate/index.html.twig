@@ -1,5 +1,42 @@
-<h1>Voici les 20 derniers article</h1>
-{% for expatriate in expatriates %}
-    <h2>Titre : {{ expatriate.Firstname }}</h2>
-    <p>{{ expatriate.description }}</p>
-{% endfor %}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <h1 class="text-3xl font-bold text-primary mb-6">Voici les expatriés</h1>
+
+    <div class="overflow-x-auto shadow-md rounded-lg">
+        <table class="min-w-full bg-white border border-gray-200">
+            <thead class="bg-primary text-white">
+            <tr>
+                <th class="px-6 py-3 text-left text-sm font-semibold">Nom</th>
+                <th class="px-6 py-3 text-left text-sm font-semibold">Prénom</th>
+                <th class="px-6 py-3 text-left text-sm font-semibold">Pays</th>
+                <th class="px-6 py-3 text-left text-sm font-semibold">Date d'arrivée</th>
+                <th class="px-6 py-3 text-left text-sm font-semibold">Date de départ</th>
+            </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+            {% for expatriate in expatriates %}
+                <tr>
+                    <td class="px-6 py-4 text-sm text-gray-700">{{ expatriate.Lastname }}</td>
+                    <td class="px-6 py-4 text-sm text-gray-700">{{ expatriate.Firstname }}</td>
+                    <td class="px-6 py-4 text-sm text-gray-700">
+                        {{ expatriate.Country }}
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-700">
+                        {{ expatriate.ArrivalDate|date('d/m/Y') }}
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-700">
+                        {{ expatriate.DepartureDate|date('d/m/Y') }}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5" class="px-6 py-4 text-center text-gray-500">Aucun expatrié trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}
