@@ -23,7 +23,7 @@ class ExpatriateController extends AbstractController
                 $expatriate = new Expatriate();
                 $expatriate->setFirstname( $_POST['Firstname'] ?? null)
                     ->setLastname($_POST['Lastname'] ?? null)
-                    ->setEmail($_POST['Lastname'] ?? null)
+                    ->setEmail($_POST['Email'] ?? null)
                     ->setArrivalDate(new \DateTime($_POST['ArrivalDate'] ?? null))
                     ->setDepartureDate(new \DateTime($_POST['DepartureDate'] ?? null))
                     ->setLatitude($_POST['Latitude'] ?? null)
@@ -52,11 +52,18 @@ class ExpatriateController extends AbstractController
         }
     }
 
+    function details(int $id)
+    {
+        $expatriate = Expatriate::SqlGetById($id);
+        return $this->twig->render('Expatriate/details.html.twig', ['expatriate' => $expatriate]);
+    }
+
+
 
     function calculCountry(float $latitude, float $longitude): ?string
     {
         // URL de l'API Nominatim
-        $url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=$latitude&lon=$longitude";
+        $url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=$latitude&lon=$longitude&accept-language=fr";
 
         // Initialiser une session cURL
         $curl = curl_init();

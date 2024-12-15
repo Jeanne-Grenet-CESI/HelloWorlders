@@ -2,7 +2,7 @@
 
 {% block body %}
 
-    <h1 class="text-3xl font-bold text-primary mb-6">Voici les expatriés</h1>
+    <h1 class="text-3xl font-bold text-primary mb-6">Liste des expatriés</h1>
 
     <div class="overflow-x-auto shadow-md rounded-lg">
         <table class="min-w-full bg-white border border-gray-200">
@@ -13,10 +13,13 @@
                 <th class="px-6 py-3 text-left text-sm font-semibold">Pays</th>
                 <th class="px-6 py-3 text-left text-sm font-semibold">Date d'arrivée</th>
                 <th class="px-6 py-3 text-left text-sm font-semibold">Date de départ</th>
+                <th class="px-6 py-3 text-left text-sm font-semibold"></th>
+
             </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
             {% for expatriate in expatriates %}
+
                 <tr>
                     <td class="px-6 py-4 text-sm text-gray-700">{{ expatriate.Lastname }}</td>
                     <td class="px-6 py-4 text-sm text-gray-700">{{ expatriate.Firstname }}</td>
@@ -29,6 +32,7 @@
                     <td class="px-6 py-4 text-sm text-gray-700">
                         {{ expatriate.DepartureDate|date('d/m/Y') }}
                     </td>
+                <td><a href="/Expatriate/details/{{ expatriate.id }}">Voir plus</a></td>
                 </tr>
             {% else %}
                 <tr>

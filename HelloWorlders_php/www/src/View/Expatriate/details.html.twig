@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <h1 class="text-3xl font-bold text-primary mb-6 text-center">Détails de l'expatrié</h1>
+
+    <div class="container mx-auto p-6">
+        <div class="bg-white shadow rounded-lg p-6 max-w-3xl mx-auto">
+            <div class="mb-6 text-center">
+
+                <img
+                        src="{{ expatriate.ImageRepository ? expatriate.ImageRepository ~ '/' ~ expatriate.ImageFileName : '/assets/images/avatar.png' }}"
+                        alt="{{ expatriate.Firstname }} {{ expatriate.Lastname }}"
+                        class="w-32 h-32 rounded-full mx-auto border-4 border-primary"
+                />
+            </div>
+
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-primary mb-4">Informations personnelles</h2>
+                <ul class="space-y-2">
+                    <li><strong>Prénom :</strong> {{ expatriate.Firstname }}</li>
+                    <li><strong>Nom :</strong> {{ expatriate.Lastname }}</li>
+                    <li><strong>Genre :</strong> {{ expatriate.Gender }}</li>
+                    <li><strong>Âge :</strong> {{ expatriate.Age }} ans</li>
+                    <li><strong>Nom d'utilisateur :</strong> {{ expatriate.Username }}</li>
+                </ul>
+            </div>
+
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-primary mb-4">Informations de contact</h2>
+                <ul class="space-y-2">
+                    <li><strong>Email :</strong> {{ expatriate.Email }}</li>
+                </ul>
+            </div>
+
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-primary mb-4">Localisation</h2>
+                <ul class="space-y-2">
+                    <li><strong>Pays :</strong> {{ expatriate.Country }}</li>
+                    <li><strong>Latitude :</strong> {{ expatriate.Latitude }}</li>
+                    <li><strong>Longitude :</strong> {{ expatriate.Longitude }}</li>
+                </ul>
+                <div id="map" class="h-64 w-full rounded-lg mt-4 border"></div>
+            </div>
+
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-primary mb-4">Dates</h2>
+                <ul class="space-y-2">
+                    <li><strong>Date d'arrivée :</strong> {{ expatriate.ArrivalDate|date("d/m/Y") }}</li>
+                    <li><strong>Date de départ :</strong>
+                        {% if expatriate.DepartureDate %}
+                            {{ expatriate.DepartureDate|date("d/m/Y") }}
+                        {% else %}
+                            Non définie
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-primary mb-4">Description</h2>
+                <p class="text-gray-600">{{ expatriate.Description }}</p>
+            </div>
+        </div>
+    </div>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script>
+        const map = L.map('map').setView([{{ expatriate.Latitude }}, {{ expatriate.Longitude }}], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        L.marker([{{ expatriate.Latitude }}, {{ expatriate.Longitude }}]).addTo(map)
+            .bindPopup("Localisation de {{ expatriate.Firstname }} {{ expatriate.Lastname }}")
+            .openPopup();
+    </script>
+
+{% endblock %}
