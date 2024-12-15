@@ -248,6 +248,31 @@ class Expatriate
         return $expatriatesObjet;
     }
 
+    public static function SqlGetById( int $Id)
+    {
+        $request = BDD::getInstance()->prepare('SELECT * FROM expatriate WHERE Id = :Id');
+        $request->bindValue(':Id', $Id);
+        $request->execute();
+        $expatriateSql = $request->fetch(\PDO::FETCH_ASSOC);
+        $expatriate = new Expatriate();
+        $expatriate->setId($expatriateSql["Id"])
+            ->setFirstname($expatriateSql["Firstname"])
+            ->setLastname($expatriateSql["Lastname"])
+            ->setEmail($expatriateSql["Email"])
+            ->setArrivalDate(new \DateTime($expatriateSql["ArrivalDate"]))
+            ->setDepartureDate(new \DateTime($expatriateSql["DepartureDate"]))
+            ->setLatitude($expatriateSql["Latitude"])
+            ->setLongitude($expatriateSql["Longitude"])
+            ->setCountry($expatriateSql["Country"])
+            ->setImageRepository($expatriateSql["ImageRepository"])
+            ->setImageFileName($expatriateSql["ImageFileName"])
+            ->setAge($expatriateSql["Age"])
+            ->setUsername($expatriateSql["Username"])
+            ->setDescription($expatriateSql["Description"])
+            ->setGender($expatriateSql["Gender"]);
+        return $expatriate;
+    }
+
     public static function SqlUpdate(Expatriate $expatriate)
     {
         try {
