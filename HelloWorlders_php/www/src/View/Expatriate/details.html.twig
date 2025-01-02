@@ -20,7 +20,18 @@
                 <ul class="space-y-2">
                     <li><strong>Prénom :</strong> {{ expatriate.Firstname }}</li>
                     <li><strong>Nom :</strong> {{ expatriate.Lastname }}</li>
-                    <li><strong>Genre :</strong> {{ expatriate.Gender }}</li>
+                    <li>
+                        <strong>Genre :</strong>
+                        {% if expatriate.Gender == 'men' %}
+                            Homme
+                        {% elseif expatriate.Gender == 'women' %}
+                            Femme
+                        {% elseif expatriate.Gender == 'other' %}
+                            Autre
+                        {% else %}
+                            Inconnu
+                        {% endif %}
+                    </li>
                     <li><strong>Âge :</strong> {{ expatriate.Age }} ans</li>
                     <li><strong>Nom d'utilisateur :</strong> {{ expatriate.Username }}</li>
                 </ul>
