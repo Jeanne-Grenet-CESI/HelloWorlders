@@ -14,10 +14,9 @@ class ExpatriateController extends AbstractController
 
     public function add()
     {
+        UserController::isConnected();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
             $country = $this->calculCountry($_POST['Latitude'], $_POST['Longitude']);
-
             try {
                 // Créer un objet Expatriate et le remplir
                 $expatriate = new Expatriate();
