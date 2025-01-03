@@ -14,10 +14,9 @@ class ExpatriateController extends AbstractController
 
     public function add()
     {
+        UserController::isConnected();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
             $country = $this->calculCountry($_POST['Latitude'], $_POST['Longitude']);
-
             try {
                 // Créer un objet Expatriate et le remplir
                 $expatriate = new Expatriate();
@@ -32,7 +31,7 @@ class ExpatriateController extends AbstractController
                     ->setImageRepository( $_POST['ImageRepository'] ?? null)
                     ->setImageFileName($_POST['ImageFileName'] ?? null)
                     ->setAge($_POST['Age'] ?? null)
-                    ->setUsername($_POST['Username'] ?? null)
+                    ->setUsername($_SESSION['login']['Username'])
                     ->setDescription($_POST['Description'] ?? null)
                     ->setGender($_POST['Gender'] ?? null);
 

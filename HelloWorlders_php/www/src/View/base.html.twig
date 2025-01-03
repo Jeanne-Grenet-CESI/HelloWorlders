@@ -38,9 +38,14 @@
         </a>
 
         <ul class="flex space-x-6">
-            <li class="p-3 bg-secondary rounded-md hover:opacity-80 text-white font-bold">
-                <a href="Expatriate/add">Ajouter</a>
+            <li class="p-3 bg-white rounded-md hover:opacity-80 text-secondary border border-secondary font-bold">
+                <a href="Expatriate/add">Ajouter un profil</a>
             </li>
+            {% if session.login is defined %}
+                <a class="p-3 bg-primary rounded-md hover:opacity-80 text-white font-bold" href="/User/logout" role="button">Se déconnecter</a>
+            {% else %}
+                <a class="p-3 bg-secondary rounded-md hover:opacity-80 text-white font-bold" href="/User/login" role="button">Se connecter</a>
+            {% endif %}
         </ul>
     </div>
 </nav>
