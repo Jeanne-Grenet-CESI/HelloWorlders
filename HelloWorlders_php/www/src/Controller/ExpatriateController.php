@@ -31,7 +31,7 @@ class ExpatriateController extends AbstractController
                     ->setImageRepository( $_POST['ImageRepository'] ?? null)
                     ->setImageFileName($_POST['ImageFileName'] ?? null)
                     ->setAge($_POST['Age'] ?? null)
-                    ->setUsername($_POST['Username'] ?? null)
+                    ->setUsername($_SESSION['login']['Username'])
                     ->setDescription($_POST['Description'] ?? null)
                     ->setGender($_POST['Gender'] ?? null);
 

@@ -2,18 +2,18 @@
 
 {% block body %}
 
-    <h1 class="text-3xl font-bold text-primary mb-6">Liste des expatriés</h1>
+    <h1 class="text-3xl font-bold text-primary mb-6">Liste des profils</h1>
 
-    <div class="overflow-x-auto shadow-md rounded-lg">
-        <table class="min-w-full bg-white border border-gray-200">
+    <div class="overflow-x-auto shadow-md rounded-lg mx-auto w-[70rem]" >
+        <table class=" w-full bg-white border border-gray-200">
             <thead class="bg-primary text-white">
             <tr>
-                <th class="px-6 py-3 text-left text-sm font-semibold">Nom</th>
-                <th class="px-6 py-3 text-left text-sm font-semibold">Prénom</th>
-                <th class="px-6 py-3 text-left text-sm font-semibold">Pays</th>
-                <th class="px-6 py-3 text-left text-sm font-semibold">Date d'arrivée</th>
-                <th class="px-6 py-3 text-left text-sm font-semibold">Date de départ</th>
-                <th class="px-6 py-3 text-left text-sm font-semibold"></th>
+                <th class="text-center py-3 text-left text-sm font-semibold">Nom</th>
+                <th class="text-center py-3 text-left text-sm font-semibold">Prénom</th>
+                <th class="text-center py-3 text-left text-sm font-semibold">Pays</th>
+                <th class="text-center py-3 text-left text-sm font-semibold">Date d'arrivée</th>
+                <th class="text-center py-3 text-left text-sm font-semibold">Date de départ</th>
+                <th class="text-center py-3 text-left text-sm font-semibold"></th>
 
             </tr>
             </thead>
@@ -21,18 +21,21 @@
             {% for expatriate in expatriates %}
 
                 <tr>
-                    <td class="px-6 py-4 text-sm text-gray-700">{{ expatriate.Lastname }}</td>
-                    <td class="px-6 py-4 text-sm text-gray-700">{{ expatriate.Firstname }}</td>
-                    <td class="px-6 py-4 text-sm text-gray-700">
+                    <td class="text-center py-4 text-sm text-gray-700">{{ expatriate.Lastname }}</td>
+                    <td class="text-center py-4 text-sm text-gray-700">{{ expatriate.Firstname }}</td>
+                    <td class="text-center py-4 text-sm text-gray-700">
                         {{ expatriate.Country }}
                     </td>
-                    <td class="px-6 py-4 text-sm text-gray-700">
+                    <td class="text-center py-4 text-sm text-gray-700">
                         {{ expatriate.ArrivalDate|date('d/m/Y') }}
                     </td>
-                    <td class="px-6 py-4 text-sm text-gray-700">
+                    <td class="text-center py-4 text-sm text-gray-700">
                         {{ expatriate.DepartureDate|date('d/m/Y') }}
                     </td>
-                <td><a href="/Expatriate/details/{{ expatriate.id }}">Voir plus</a></td>
+                    <td class="">
+                        <div class=" mx-auto py-1 px-2 text-center bg-white rounded-md hover:opacity-80 text-secondary border border-secondary font-semibold w-fit">
+                            <a href="/Expatriate/details/{{ expatriate.id }}">Voir plus</a></div>
+                    </td>
                 </tr>
             {% else %}
                 <tr>
