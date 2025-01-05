@@ -148,6 +148,20 @@ class ExpatriateController extends AbstractController
         return $this->twig->render('Expatriate/details.html.twig', ['expatriate' => $expatriate]);
     }
 
+    public function delete(int $id)
+    {
+        UserController::isConnected();
+        $expatriate = Expatriate::SqlGetById($id);
+
+        if ($expatriate->getUsername() !== $_SESSION['login']['Username']) {
+            throw new \Exception("Vous n'êtes pas autorisé à supprimer cet expatrié.");
+        }
+
+        Expatriate::SqlDelete($id);
+        header('Location: /');
+        exit;
+    }
+
 
 
     function calculCountry(float $latitude, float $longitude): ?string

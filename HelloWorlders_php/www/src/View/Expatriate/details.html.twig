@@ -73,9 +73,12 @@
             </div>
 
             {% if session.login.Username == expatriate.Username %}
-                <div class="flex justify-end mt-6">
+                <div class="flex justify-end mt-6 gap-4">
                     <a href="/expatriate/update/{{ expatriate.id }}" class="px-4 py-2 bg-primary text-white font-bold rounded hover:bg-primary-dark">
                         Modifier
+                    </a>
+                    <a href="/expatriate/delete/{{ expatriate.id }}" class="px-4 py-2 bg-secondary text-white font-bold rounded hover:bg-primary-dark">
+                        Supprimer
                     </a>
                 </div>
             {% endif %}

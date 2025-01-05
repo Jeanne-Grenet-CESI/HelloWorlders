@@ -318,6 +318,13 @@ class Expatriate
         }
     }
 
+    public static function SqlDelete(int $Id)
+    {
+        $request = BDD::getInstance()->prepare('DELETE FROM expatriate WHERE Id = :Id');
+        $request->bindValue(':Id', $Id);
+        $request->execute();
+    }
+
 
 
 }
