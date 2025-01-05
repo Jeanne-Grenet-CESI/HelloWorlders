@@ -2,15 +2,15 @@
 
 {% block body %}
     <div class="container mx-auto px-4">
-        <h1 class="text-3xl font-bold text-primary mb-6 text-center">Ajouter un expatrié</h1>
+        <h1 class="text-3xl font-bold text-primary mb-6 text-center">Modifier un expatrié</h1>
 
-        <form method="POST" action="/expatriate/add" class="bg-white p-6 rounded shadow-md max-w-2xl mx-auto" enctype="multipart/form-data">
+        <form method="POST" action="/expatriate/update/{{ expatriate.id }}" class="bg-white p-6 rounded shadow-md max-w-2xl mx-auto" enctype="multipart/form-data">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                 <div>
                     <label for="Firstname" class="block text-sm font-medium text-gray-700">
                         Prénom <span class="text-secondary">*</span>
                     </label>
-                    <input type="text" id="Firstname" name="Firstname"
+                    <input type="text" id="Firstname" name="Firstname" value="{{ expatriate.Firstname }}"
                            class="mt-1 block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-primary focus:border-primary"
                            required>
                 </div>
@@ -18,7 +18,7 @@
                     <label for="Lastname" class="block text-sm font-medium text-gray-700">
                         Nom <span class="text-secondary">*</span>
                     </label>
-                    <input type="text" id="Lastname" name="Lastname"
+                    <input type="text" id="Lastname" name="Lastname" value="{{ expatriate.Lastname }}"
                            class="mt-1 block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-primary focus:border-primary"
                            required>
                 </div>
@@ -31,16 +31,16 @@
                     </label>
                     <select id="Gender" name="Gender"
                             class="mt-1 block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-primary focus:border-primary">
-                        <option value="men">Homme</option>
-                        <option value="women">Femme</option>
-                        <option value="other">Autre</option>
+                        <option value="men" {% if expatriate.Gender == 'men' %}selected{% endif %}>Homme</option>
+                        <option value="women" {% if expatriate.Gender == 'women' %}selected{% endif %}>Femme</option>
+                        <option value="other" {% if expatriate.Gender == 'other' %}selected{% endif %}>Autre</option>
                     </select>
                 </div>
                 <div>
                     <label for="Email" class="block text-sm font-medium text-gray-700">
                         Email <span class="text-secondary">*</span>
                     </label>
-                    <input type="email" id="Email" name="Email"
+                    <input type="email" id="Email" name="Email" value="{{ expatriate.Email }}"
                            class="mt-1 block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-primary focus:border-primary"
                            required>
                 </div>
@@ -51,7 +51,7 @@
                     <label for="ArrivalDate" class="block text-sm font-medium text-gray-700">
                         Date d'arrivée <span class="text-secondary">*</span>
                     </label>
-                    <input type="date" id="ArrivalDate" name="ArrivalDate"
+                    <input type="date" id="ArrivalDate" name="ArrivalDate" value="{{ expatriate.ArrivalDate|date('Y-m-d') }}"
                            class="mt-1 block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-primary focus:border-primary"
                            required>
                 </div>
@@ -59,7 +59,7 @@
                     <label for="DepartureDate" class="block text-sm font-medium text-gray-700">
                         Date de départ
                     </label>
-                    <input type="date" id="DepartureDate" name="DepartureDate"
+                    <input type="date" id="DepartureDate" name="DepartureDate" value="{{ expatriate.DepartureDate|date('Y-m-d') }}"
                            class="mt-1 block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-primary focus:border-primary">
                 </div>
             </div>
@@ -68,7 +68,7 @@
                 <label for="Age" class="block text-sm font-medium text-gray-700">
                     Âge
                 </label>
-                <input type="number" id="Age" name="Age"
+                <input type="number" id="Age" name="Age" value="{{ expatriate.Age }}"
                        class="mt-1 block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-primary focus:border-primary">
             </div>
 
@@ -79,8 +79,8 @@
                 <div id="map" class="rounded border" style="height: 300px; width: 100%;"></div>
             </div>
 
-            <input type="hidden" id="Latitude" name="Latitude" required>
-            <input type="hidden" id="Longitude" name="Longitude" required>
+            <input type="hidden" id="Latitude" name="Latitude" value="{{ expatriate.Latitude }}" required>
+            <input type="hidden" id="Longitude" name="Longitude" value="{{ expatriate.Longitude }}" required>
 
             <div class="mb-4">
                 <label for="Image" class="block text-sm font-medium text-gray-700">
@@ -88,6 +88,17 @@
                 </label>
                 <input type="file" id="Image" name="Image"
                        class="block w-full text-sm text-gray-500 border border-gray-300 rounded file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-dark">
+
+                {% if expatriate.ImageFileName %}
+                    <div class="mt-4">
+                        <p class="text-sm text-gray-500 mb-2">Image actuelle :</p>
+                        <img
+                                src="{{ '/uploads/images/' ~ expatriate.ImageRepository ~ '/' ~ expatriate.ImageFileName }}"
+                                alt="Image actuelle de {{ expatriate.Firstname }} {{ expatriate.Lastname }}"
+                                class="w-32 h-32 rounded border"
+                        />
+                    </div>
+                {% endif %}
             </div>
 
             <div class="mb-4">
@@ -95,12 +106,12 @@
                     Description
                 </label>
                 <textarea id="Description" name="Description" rows="4"
-                          class="mt-1 block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-primary focus:border-primary"></textarea>
+                          class="mt-1 block w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-primary focus:border-primary">{{ expatriate.Description }}</textarea>
             </div>
 
             <div class="flex justify-end">
                 <button type="submit" class="px-4 py-2 bg-primary text-white font-bold rounded hover:bg-primary-dark">
-                    Ajouter
+                    Modifier
                 </button>
             </div>
         </form>
@@ -108,18 +119,16 @@
 
     <script>
         // Carte et gestion des coordonnées
-        const map = L.map('map').setView([48.8566, 2.3522], 13);
+        const map = L.map('map').setView([{{ expatriate.Latitude }}, {{ expatriate.Longitude }}], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        let marker = L.marker([48.8566, 2.3522], {draggable: true}).addTo(map);
+        let marker = L.marker([{{ expatriate.Latitude }}, {{ expatriate.Longitude }}], {draggable: true}).addTo(map);
         const updateLatLngFields = (lat, lng) => {
             document.getElementById('Latitude').value = lat;
             document.getElementById('Longitude').value = lng;
         };
-        updateLatLngFields(48.8566, 2.3522);
-
         marker.on('dragend', (e) => {
             const {lat, lng} = e.target.getLatLng();
             updateLatLngFields(lat, lng);
