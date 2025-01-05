@@ -75,41 +75,72 @@ class ExpatriateController extends AbstractController
     {
         UserController::isConnected();
         $expatriate = Expatriate::SqlGetById($id);
+
+        if ($expatriate->getUsername() !== $_SESSION['login']['Username']) {
+            throw new \Exception("Vous n'êtes pas autorisé à modifier cet expatrié.");
+        }
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $country = $this->calculCountry($_POST['Latitude'], $_POST['Longitude']);
             try {
-                // Créer un objet Expatriate et le remplir
-                $expatriate = new Expatriate();
-                $expatriate->setFirstname( $_POST['Firstname'] ?? null)
-                    ->setLastname($_POST['Lastname'] ?? null)
-                    ->setEmail($_POST['Email'] ?? null)
-                    ->setArrivalDate(new \DateTime($_POST['ArrivalDate'] ?? null))
-                    ->setDepartureDate(new \DateTime($_POST['DepartureDate'] ?? null))
-                    ->setLatitude($_POST['Latitude'] ?? null)
-                    ->setLongitude($_POST['Longitude'] ?? null)
-                    ->setCountry($country)
-                    ->setImageRepository( $_POST['ImageRepository'] ?? null)
-                    ->setImageFileName($_POST['ImageFileName'] ?? null)
-                    ->setAge($_POST['Age'] ?? null)
-                    ->setUsername($_SESSION['login']['Username'])
-                    ->setDescription($_POST['Description'] ?? null)
-                    ->setGender($_POST['Gender'] ?? null);
+                $sqlRepository = $expatriate->getImageRepository();
+                $nomImage = $expatriate->getImageFileName();
 
-                $result = Expatriate::SqlAdd($expatriate);
+                if (isset($_FILES["Image"]["name"]) && $_FILES["Image"]["name"] !== '') {
+                    $extensionsAutorisees = ["jpg", "jpeg", "png"];
+                    $extension = pathinfo($_FILES["Image"]["name"], PATHINFO_EXTENSION);
 
-                if ($result) {
-                    header('Location: /');
-                    exit;
-                } else {
-                    throw new \Exception("Erreur lors de l'ajout de l'expatrié.");
+                    if (in_array(strtolower($extension), $extensionsAutorisees)) {
+                        $dateNow = new \DateTime();
+                        $sqlRepository = $dateNow->format("Y/m");
+                        $repository = "./uploads/images/{$sqlRepository}";
+
+                        if (!is_dir($repository)) {
+                            mkdir($repository, 0777, true);
+                        }
+
+                        $nomImage = uniqid() . "." . $extension;
+
+                        move_uploaded_file($_FILES["Image"]["tmp_name"], $repository . "/" . $nomImage);
+
+                        if (!empty($expatriate->getImageFileName()) &&
+                            file_exists("{$_SERVER["DOCUMENT_ROOT"]}/uploads/images/{$expatriate->getImageRepository()}/{$expatriate->getImageFileName()}")) {
+                            unlink("{$_SERVER["DOCUMENT_ROOT"]}/uploads/images/{$expatriate->getImageRepository()}/{$expatriate->getImageFileName()}");
+                        }
+                    }
                 }
+
+                if ($_POST['Latitude'] != $expatriate->getLatitude() || $_POST['Longitude'] != $expatriate->getLongitude()) {
+                    $country = $this->calculCountry($_POST['Latitude'], $_POST['Longitude']);
+                } else {
+                    $country = $expatriate->getCountry();
+                }
+
+                $expatriate->setFirstname($_POST['Firstname'] ?? $expatriate->getFirstname())
+                    ->setLastname($_POST['Lastname'] ?? $expatriate->getLastname())
+                    ->setEmail($_POST['Email'] ?? $expatriate->getEmail())
+                    ->setArrivalDate(new \DateTime($_POST['ArrivalDate'] ?? $expatriate->getArrivalDate()->format('Y-m-d')))
+                    ->setDepartureDate(new \DateTime($_POST['DepartureDate'] ?? $expatriate->getDepartureDate()->format('Y-m-d')))
+                    ->setLatitude($_POST['Latitude'] ?? $expatriate->getLatitude())
+                    ->setLongitude($_POST['Longitude'] ?? $expatriate->getLongitude())
+                    ->setCountry($country)
+                    ->setImageRepository($sqlRepository)
+                    ->setImageFileName($nomImage)
+                    ->setAge($_POST['Age'] ?? $expatriate->getAge())
+                    ->setUsername($expatriate->getUsername()) // Conserver le username existant
+                    ->setDescription($_POST['Description'] ?? $expatriate->getDescription())
+                    ->setGender($_POST['Gender'] ?? $expatriate->getGender());
+
+                Expatriate::SqlUpdate($expatriate);
+
+                header('Location: /');
+                exit;
             } catch (\Exception $e) {
                 echo "Erreur : " . $e->getMessage();
             }
-        } else {
-            return $this->twig->render('Expatriate/add.html.twig');
         }
+        return $this->twig->render('Expatriate/update.html.twig', ['expatriate' => $expatriate]);
     }
+
 
     function details(int $id)
     {

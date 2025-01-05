@@ -290,7 +290,9 @@ class Expatriate
                 Gender = :Gender,
                 Age = :Age,
                 Username = :Username,
-                Description = :Description
+                Description = :Description,
+                Country = :Country
+                        
             WHERE Id = :Id  
         ");
 
@@ -308,6 +310,7 @@ class Expatriate
             $request->bindValue(':Age', $expatriate->getAge());
             $request->bindValue(':Username', $expatriate->getUsername());
             $request->bindValue(':Description', $expatriate->getDescription());
+            $request->bindValue(':Country', $expatriate->getCountry());
             $request->execute();
             return BDD::getInstance()->lastInsertId();
         } catch (\PDOException $e) {
