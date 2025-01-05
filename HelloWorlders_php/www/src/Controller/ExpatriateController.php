@@ -18,6 +18,66 @@ class ExpatriateController extends AbstractController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $country = $this->calculCountry($_POST['Latitude'], $_POST['Longitude']);
             try {
+
+                $sqlRepository = null;
+                $imageName = null;
+                if (!empty($_FILES['Image']['name'])) {
+                    $tabExt = ['jpg', 'gif', 'png', 'jpeg'];
+                    $extension = pathinfo($_FILES['Image']['name'], PATHINFO_EXTENSION);
+                    if (in_array(strtolower($extension), $tabExt)) {
+                        $dateNow = new \DateTime();
+                        $sqlRepository = $dateNow->format('Y/m');
+                        $repository = './uploads/images/' . $dateNow->format('Y/m');
+                        if (!is_dir($repository)) {
+                            mkdir($repository, 0777, true);
+                        }
+                        $imageName = md5(uniqid()) . '.' . $extension;
+
+
+                        move_uploaded_file($_FILES['Image']['tmp_name'], $repository . '/' . $imageName);
+                    }
+                }
+
+                // Créer un objet Expatriate et le remplir
+                $expatriate = new Expatriate();
+                $expatriate->setFirstname( $_POST['Firstname'])
+                    ->setLastname($_POST['Lastname'])
+                    ->setEmail($_POST['Email'])
+                    ->setArrivalDate(new \DateTime($_POST['ArrivalDate'] ))
+                    ->setDepartureDate(new \DateTime($_POST['DepartureDate'] ))
+                    ->setLatitude($_POST['Latitude'])
+                    ->setLongitude($_POST['Longitude'])
+                    ->setCountry($country)
+                    ->setImageRepository( $sqlRepository)
+                    ->setImageFileName($imageName)
+                    ->setAge($_POST['Age'])
+                    ->setUsername($_SESSION['login']['Username'])
+                    ->setDescription($_POST['Description'])
+                    ->setGender($_POST['Gender']);
+
+                $result = Expatriate::SqlAdd($expatriate);
+                
+                if ($result) {
+                    header('Location: /');
+                    exit;
+                } else {
+                    throw new \Exception("Erreur lors de l'ajout de l'expatrié.");
+                }
+            } catch (\Exception $e) {
+                echo "Erreur : " . $e->getMessage();
+            }
+        } else {
+            return $this->twig->render('Expatriate/add.html.twig');
+        }
+    }
+
+    public function update($id)
+    {
+        UserController::isConnected();
+        $expatriate = Expatriate::SqlGetById($id);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $country = $this->calculCountry($_POST['Latitude'], $_POST['Longitude']);
+            try {
                 // Créer un objet Expatriate et le remplir
                 $expatriate = new Expatriate();
                 $expatriate->setFirstname( $_POST['Firstname'] ?? null)
@@ -36,7 +96,7 @@ class ExpatriateController extends AbstractController
                     ->setGender($_POST['Gender'] ?? null);
 
                 $result = Expatriate::SqlAdd($expatriate);
-                
+
                 if ($result) {
                     header('Location: /');
                     exit;

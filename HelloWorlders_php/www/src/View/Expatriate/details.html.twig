@@ -9,7 +9,7 @@
             <div class="mb-6 text-center">
 
                 <img
-                        src="{{ expatriate.ImageRepository ? expatriate.ImageRepository ~ '/' ~ expatriate.ImageFileName : '/assets/images/avatar.png' }}"
+                        src="{{ expatriate.ImageRepository ? '/uploads/images/' ~ expatriate.ImageRepository ~ '/' ~ expatriate.ImageFileName : '/assets/images/avatar.png' }}"
                         alt="{{ expatriate.Firstname }} {{ expatriate.Lastname }}"
                         class="w-32 h-32 rounded-full mx-auto border-4 border-primary"
                 />
