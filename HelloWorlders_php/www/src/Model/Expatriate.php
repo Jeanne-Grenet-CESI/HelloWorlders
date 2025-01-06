@@ -1,7 +1,7 @@
 <?php
 
 namespace Src\Model;
-class Expatriate
+class Expatriate  implements \JsonSerializable
 {
     private ?int $Id = null;
     private ?string $FirstName = null;
@@ -323,6 +323,27 @@ class Expatriate
         $request = BDD::getInstance()->prepare('DELETE FROM expatriate WHERE Id = :Id');
         $request->bindValue(':Id', $Id);
         $request->execute();
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return [
+            "Id" => $this->Id,
+            "Firstname" => $this->FirstName,
+            "Lastname" => $this->LastName,
+            "Email" => $this->Email,
+            "ArrivalDate" => $this->ArrivalDate?->format('Y-m-d'),
+            "DepartureDate" => $this->DepartureDate?->format('Y-m-d'),
+            "Latitude" => $this->Latitude,
+            "Longitude" => $this->Longitude,
+            "Country" => $this->Country,
+            "ImageRepository" => $this->ImageRepository,
+            "ImageFileName" => $this->ImageFileName,
+            "Gender" => $this->Gender,
+            "Age" => $this->Age,
+            "Username" => $this->Username,
+            "Description" => $this->Description
+        ];
     }
 
 

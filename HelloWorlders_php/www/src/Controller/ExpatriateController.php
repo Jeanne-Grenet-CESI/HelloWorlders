@@ -162,9 +162,7 @@ class ExpatriateController extends AbstractController
         exit;
     }
 
-
-
-    function calculCountry(float $latitude, float $longitude): ?string
+   static function calculCountry(float $latitude, float $longitude): ?string
     {
         // URL de l'API Nominatim
         $url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=$latitude&lon=$longitude&accept-language=fr";
