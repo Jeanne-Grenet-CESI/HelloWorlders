@@ -1,0 +1,77 @@
+<div>
+    <div>
+        <div>
+            <h1>Dossier de l'expatrié</h1>
+            <p>{{ expatriate.Firstname }} {{ expatriate.Lastname }}</p>
+        </div>
+
+        <div>
+            <img
+                    src="{{ expatriate.ImageRepository ? '/uploads/images/' ~ expatriate.ImageRepository ~ '/' ~ expatriate.ImageFileName : '/assets/images/avatar.png' }}"
+                    alt="Photo de {{ expatriate.Firstname }}"
+                    style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%;"
+            />
+        </div>
+
+        <div>
+            <h2>Informations personnelles</h2>
+            <ul>
+                <li><strong>Prénom :</strong> {{ expatriate.Firstname }}</li>
+                <li><strong>Nom :</strong> {{ expatriate.Lastname }}</li>
+                <li>
+                    <strong>Genre :</strong>
+                    {% if expatriate.Gender == 'men' %}
+                        Homme
+                    {% elseif expatriate.Gender == 'women' %}
+                        Femme
+                    {% elseif expatriate.Gender == 'other' %}
+                        Autre
+                    {% else %}
+                        Inconnu
+                    {% endif %}
+                </li>
+                <li><strong>Âge :</strong> {{ expatriate.Age }} ans</li>
+                <li><strong>Nom d'utilisateur :</strong> {{ expatriate.Username }}</li>
+            </ul>
+        </div>
+
+        <div>
+            <h2>Informations de contact</h2>
+            <ul>
+                <li><strong>Email :</strong> {{ expatriate.Email }}</li>
+            </ul>
+        </div>
+
+        <div>
+            <h2>Localisation</h2>
+            <ul>
+                <li><strong>Pays :</strong> {{ expatriate.Country }}</li>
+                <li><strong>Latitude :</strong> {{ expatriate.Latitude }}</li>
+                <li><strong>Longitude :</strong> {{ expatriate.Longitude }}</li>
+            </ul>
+        </div>
+
+
+        <div>
+            <h2>Dates importantes</h2>
+            <ul>
+                <li><strong>Date d'arrivée :</strong> {{ expatriate.ArrivalDate|date("d/m/Y") }}</li>
+                <li><strong>Date de départ :</strong>
+                    {% if expatriate.DepartureDate %}
+                        {{ expatriate.DepartureDate|date("d/m/Y") }}
+                    {% else %}
+                        Non définie
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+
+        {% if expatriate.Description %}
+            <div>
+                <h2>Description</h2>
+                <p>{{ expatriate.Description }}</p>
+            </div>
+        {% endif %}
+
+    </div>
+</div>

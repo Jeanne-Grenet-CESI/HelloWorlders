@@ -2,6 +2,8 @@
 
 namespace src\Controller;
 
+use Mpdf\Mpdf;
+use Mpdf\Output\Destination;
 use src\Model\Expatriate;
 
 class ExpatriateController extends AbstractController
@@ -197,4 +199,16 @@ class ExpatriateController extends AbstractController
         return null; // Retourne null si le pays n'a pas pu être déterminé
     }
 
+    public function pdf(int $id)
+    {
+        $expatriate = Expatriate::SqlGetById($id);
+
+        $fileName = $expatriate->getFirstname() . '_' . $expatriate->getLastname() . '.pdf';
+
+        $mpdf = new Mpdf([
+            "tempDir"=> $_SERVER['DOCUMENT_ROOT']."/../var/cache/expatriate/".$expatriate->getId().'/pdf'
+        ]);
+        $mpdf->WriteHTML($this->twig->render('Expatriate/pdf.html.twig', ['expatriate' => $expatriate]));
+        $mpdf->Output($fileName, \Mpdf\Output\Destination::DOWNLOAD);
+    }
 }
