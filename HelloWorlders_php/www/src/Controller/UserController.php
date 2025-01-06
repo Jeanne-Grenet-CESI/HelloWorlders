@@ -62,4 +62,41 @@ class UserController extends AbstractController
         }
     }
 
+    public function loginjwt()
+    {
+        header('Content-Type: application/json ; charset=utf-8');
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('HTTP/1.1 405 Method Not Allowed');
+            return json_encode(["status" => "error", "message" => "Méthode non autorisée, POST attendu"]);
+        }
+
+        //Récupération du body en JSON
+        $data = file_get_contents('php://input');
+        $json = json_decode($data);
+
+        if (empty($json)) {
+            header('HTTP/1.1 400 Bad Request');
+            return json_encode(["status" => "error", "message" => "Aucune données reçues"]);
+        }
+
+        if (!isset($json->Email) || !isset($json->Password)) {
+            header('HTTP/1.1 400 Bad Request');
+            return json_encode(["status" => "error", "message" => "Données manquantes"]);
+        }
+
+        $user = User::SqlGetByMail($json->Email);
+        if($user === null){
+            header('HTTP/1.1 403 Forbiden');
+            return json_encode(["status" => "error", "message" => "Utilisateur inconnu"]);
+        }
+        if(!password_verify($json->Password, $user->getPassword())){
+            header('HTTP/1.1 403 Forbiden');
+            return json_encode(["status" => "error", "message" => "Mot de passe incorrect"]);
+        }
+        return JwtService::createToken([
+            "Email" => $user->getEmail(),
+            "Username" => $user->getUsername()
+        ]);
+    }
+
 }

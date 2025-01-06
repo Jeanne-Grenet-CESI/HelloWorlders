@@ -1,7 +1,7 @@
 <?php
 
 namespace Src\Model;
-class Expatriate
+class Expatriate  implements \JsonSerializable
 {
     private ?int $Id = null;
     private ?string $FirstName = null;
@@ -292,7 +292,6 @@ class Expatriate
                 Username = :Username,
                 Description = :Description,
                 Country = :Country
-                        
             WHERE Id = :Id  
         ");
 
@@ -312,7 +311,7 @@ class Expatriate
             $request->bindValue(':Description', $expatriate->getDescription());
             $request->bindValue(':Country', $expatriate->getCountry());
             $request->execute();
-            return BDD::getInstance()->lastInsertId();
+            return $request->rowCount() > 0;
         } catch (\PDOException $e) {
             return $e->getMessage();
         }
@@ -320,9 +319,36 @@ class Expatriate
 
     public static function SqlDelete(int $Id)
     {
+        try {
+
         $request = BDD::getInstance()->prepare('DELETE FROM expatriate WHERE Id = :Id');
         $request->bindValue(':Id', $Id);
         $request->execute();
+        return $request->rowCount() > 0;
+        }catch (\PDOException $e){
+            return $e->getMessage();
+        }
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return [
+            "Id" => $this->Id,
+            "Firstname" => $this->FirstName,
+            "Lastname" => $this->LastName,
+            "Email" => $this->Email,
+            "ArrivalDate" => $this->ArrivalDate?->format('Y-m-d'),
+            "DepartureDate" => $this->DepartureDate?->format('Y-m-d'),
+            "Latitude" => $this->Latitude,
+            "Longitude" => $this->Longitude,
+            "Country" => $this->Country,
+            "ImageRepository" => $this->ImageRepository,
+            "ImageFileName" => $this->ImageFileName,
+            "Gender" => $this->Gender,
+            "Age" => $this->Age,
+            "Username" => $this->Username,
+            "Description" => $this->Description
+        ];
     }
 
 

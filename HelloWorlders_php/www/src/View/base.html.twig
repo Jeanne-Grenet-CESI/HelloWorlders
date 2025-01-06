@@ -41,12 +41,14 @@
             Menu
         </button>
         <ul id="menu" class="hidden sm:flex flex-col sm:flex-row sm:space-x-6 sm:items-center w-full sm:w-auto mt-4 sm:mt-0 bg-white sm:bg-transparent p-4 sm:p-0 space-y-4 sm:space-y-0">
+            {% if session.login is defined %}
             <li>
                 <a href="/Expatriate/add"
                    class="block text-center sm:inline p-3 bg-white rounded-md hover:opacity-80 text-secondary border border-secondary font-bold">
                     Ajouter un profil
                 </a>
             </li>
+            {% endif %}
             {% if session.login is defined %}
                 <li>
                     <a href="/User/logout"

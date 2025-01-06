@@ -6,12 +6,12 @@ use Firebase\JWT\Key;
 
 class JwtService
 {
-    public static String $secretKey = "helloWorlders";
+    public static String $secretKey = "helloworlders";
 
     public static function createToken(array $datas) : string
     {
         $issuedAt = new \DateTimeImmutable();
-        $expire = $issuedAt->modify("+1 minutes")->getTimestamp();
+        $expire = $issuedAt->modify("+10 minutes")->getTimestamp();
         $serverName = "helloworlders.local";
         $data = [
             "iat" => $issuedAt->getTimestamp(),
@@ -19,6 +19,8 @@ class JwtService
             "nbf" => $issuedAt->getTimestamp(),
             "exp" => $expire,
             "data" => CryptService::encrypt(json_encode($datas))
+
+
         ];
         $jwt = JWT::encode($data, self::$secretKey, 'HS256');
         return $jwt;
@@ -26,14 +28,13 @@ class JwtService
 
     public static function checkToken() : array
     {
-
-        if (!preg_match('/Bearer\s(\S+)/', $_SERVER['HTTP_AUTHORIZATION'], $matches
+        if (! preg_match('/Bearer\s(\S+)/', $_SERVER['HTTP_AUTHORIZATION'], $matches
         )) {
-            return ["status" => "error", "message" => "Token not found"];
+            return ["status" => "error", "message" => "Token non trouvé"];
         }
         $jwt = $matches[1];
         if(!$jwt){
-            return ["status" => "error", "message" => "Token could not be extracted"];
+            return ["status" => "error", "message" => "Aucun token n'a pu être extrait"];
         }
         try {
             $token = JWT::decode($jwt, new Key(self::$secretKey, 'HS256') );
@@ -41,10 +42,10 @@ class JwtService
             return ["status" => "error", "message" => $exception->getMessage()];
         }
         $now = new \DateTimeImmutable();
-        $serverName = "cesi.local";
+        $serverName = "helloworlders.local";
         if($token->iss !== $serverName || $token->nbf > $now->getTimestamp() || $token->exp < $now->getTimestamp()){
-            return ["status" => "error", "message" => "Invalid Token"];
+            return ["status" => "error", "message" => "Token invalide"];
         }
-        return ["status" => "success", "message" => "Token validated", "data" => json_decode(CryptService::decrypt($token->data))];
+        return ["status" => "success", "message" => "Token JWT valide", "data" => json_decode(CryptService::decrypt($token->data))];
     }
 }

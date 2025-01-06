@@ -102,10 +102,7 @@ class ExpatriateController extends AbstractController
 
                         move_uploaded_file($_FILES["Image"]["tmp_name"], $repository . "/" . $nomImage);
 
-                        if (!empty($expatriate->getImageFileName()) &&
-                            file_exists("{$_SERVER["DOCUMENT_ROOT"]}/uploads/images/{$expatriate->getImageRepository()}/{$expatriate->getImageFileName()}")) {
-                            unlink("{$_SERVER["DOCUMENT_ROOT"]}/uploads/images/{$expatriate->getImageRepository()}/{$expatriate->getImageFileName()}");
-                        }
+                        $this->deleteImage($expatriate->getImageRepository(), $expatriate->getImageFileName());
                     }
                 }
 
@@ -157,14 +154,22 @@ class ExpatriateController extends AbstractController
             throw new \Exception("Vous n'êtes pas autorisé à supprimer cet expatrié.");
         }
 
+        $this->deleteImage($expatriate->getImageRepository(), $expatriate->getImageFileName());
+
         Expatriate::SqlDelete($id);
         header('Location: /');
         exit;
     }
 
+    private function deleteImage(string $repository, string $fileName): void
+    {
+        $imagePath = "{$_SERVER["DOCUMENT_ROOT"]}/uploads/images/{$repository}/{$fileName}";
+        if (!empty($fileName) && file_exists($imagePath)) {
+            unlink($imagePath);
+        }
+    }
 
-
-    function calculCountry(float $latitude, float $longitude): ?string
+   static function calculCountry(float $latitude, float $longitude): ?string
     {
         // URL de l'API Nominatim
         $url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=$latitude&lon=$longitude&accept-language=fr";
