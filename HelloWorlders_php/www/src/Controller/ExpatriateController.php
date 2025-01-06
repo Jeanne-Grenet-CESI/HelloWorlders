@@ -18,6 +18,7 @@ class ExpatriateController extends AbstractController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $country = $this->calculCountry($_POST['Latitude'], $_POST['Longitude']);
             try {
+            $departureDate = !empty($_POST['DepartureDate']) ? new \DateTime($_POST['DepartureDate']) : null;
 
                 $sqlRepository = null;
                 $imageName = null;
@@ -40,20 +41,21 @@ class ExpatriateController extends AbstractController
 
                 // Créer un objet Expatriate et le remplir
                 $expatriate = new Expatriate();
-                $expatriate->setFirstname( $_POST['Firstname'])
+                $expatriate->setFirstname($_POST['Firstname'])
                     ->setLastname($_POST['Lastname'])
                     ->setEmail($_POST['Email'])
-                    ->setArrivalDate(new \DateTime($_POST['ArrivalDate'] ))
-                    ->setDepartureDate(new \DateTime($_POST['DepartureDate'] ))
+                    ->setArrivalDate(new \DateTime($_POST['ArrivalDate']))
+                    ->setDepartureDate($departureDate)
                     ->setLatitude($_POST['Latitude'])
                     ->setLongitude($_POST['Longitude'])
                     ->setCountry($country)
-                    ->setImageRepository( $sqlRepository)
+                    ->setImageRepository($sqlRepository)
                     ->setImageFileName($imageName)
                     ->setAge($_POST['Age'])
                     ->setUsername($_SESSION['login']['Username'])
                     ->setDescription($_POST['Description'])
                     ->setGender($_POST['Gender']);
+
 
                 $result = Expatriate::SqlAdd($expatriate);
                 
