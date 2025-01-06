@@ -292,7 +292,6 @@ class Expatriate  implements \JsonSerializable
                 Username = :Username,
                 Description = :Description,
                 Country = :Country
-                        
             WHERE Id = :Id  
         ");
 
@@ -312,7 +311,7 @@ class Expatriate  implements \JsonSerializable
             $request->bindValue(':Description', $expatriate->getDescription());
             $request->bindValue(':Country', $expatriate->getCountry());
             $request->execute();
-            return BDD::getInstance()->lastInsertId();
+            return $request->rowCount() > 0;
         } catch (\PDOException $e) {
             return $e->getMessage();
         }
