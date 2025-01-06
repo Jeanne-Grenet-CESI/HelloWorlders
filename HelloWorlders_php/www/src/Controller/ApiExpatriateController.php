@@ -172,12 +172,7 @@ class ApiExpatriateController {
             ->setGender($json->Gender ?? $expatriate->getGender())
             ->setUsername($expatriate->getUsername());
 
-        try {
             $result = Expatriate::SqlUpdate($expatriate);
-        } catch (\Exception $e) {
-            error_log("Erreur lors de l'exécution de SqlUpdate : " . $e->getMessage());
-            return json_encode(["status" => "error", "message" => "Erreur interne : " . $e->getMessage()]);
-        }
 
         if ($result) {
             return json_encode(["status" => "success", "message" => "Profil mis à jour avec succès"]);
@@ -185,8 +180,39 @@ class ApiExpatriateController {
             header('HTTP/1.1 500 Internal Server Error');
             return json_encode(["status" => "error", "message" => "Aucune mise à jour effectuée"]);
         }
-
     }
 
+    public function delete($id)
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'DELETE') {
+            header('HTTP/1.1 405 Method Not Allowed');
+            return json_encode(["status" => "error", "message" => "Méthode non autorisée, DELETE attendu"]);
+        }
+
+        $jwtresult = JwtService::checkToken();
+        if ($jwtresult["status"] === "error") {
+            return json_encode($jwtresult["message"]);
+        }
+
+        $expatriate = Expatriate::SqlGetById($id);
+        if (!$expatriate) {
+            header('HTTP/1.1 404 Not Found');
+            return json_encode(["status" => "error", "message" => "Expatrié introuvable"]);
+        }
+
+        $username = $jwtresult["data"]->Username;
+        if ($expatriate->getUsername() !== $username) {
+            header('HTTP/1.1 403 Forbidden');
+            return json_encode(["status" => "error", "message" => "Vous n'êtes pas autorisé à supprimer cet expatrié."]);
+        }
+
+        $result = Expatriate::SqlDelete($id);
+        if ($result) {
+            return json_encode(["status" => "success", "message" => "Profil supprimé avec succès"]);
+        } else {
+            header('HTTP/1.1 500 Internal Server Error');
+            return json_encode(["status" => "error", "message" => "Aucune suppression effectuée"]);
+        }
+    }
 
 }

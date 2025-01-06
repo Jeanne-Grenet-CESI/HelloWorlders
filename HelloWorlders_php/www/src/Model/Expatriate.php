@@ -319,9 +319,15 @@ class Expatriate  implements \JsonSerializable
 
     public static function SqlDelete(int $Id)
     {
+        try {
+
         $request = BDD::getInstance()->prepare('DELETE FROM expatriate WHERE Id = :Id');
         $request->bindValue(':Id', $Id);
         $request->execute();
+        return $request->rowCount() > 0;
+        }catch (\PDOException $e){
+            return $e->getMessage();
+        }
     }
 
     public function jsonSerialize(): mixed
