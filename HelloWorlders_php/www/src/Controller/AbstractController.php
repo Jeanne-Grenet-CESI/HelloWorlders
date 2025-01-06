@@ -1,12 +1,16 @@
 <?php
 namespace src\Controller;
 
+use src\Service\MailService;
+
 abstract class AbstractController
 {
     protected $twig = null;
+    protected MailService $mailService;
 
     public function __construct()
     {
+
         $loader = new \Twig\Loader\FilesystemLoader($_SERVER['DOCUMENT_ROOT'].'/../src/View');
         $this->twig = new \Twig\Environment($loader, [
             'cache' => $_SERVER['DOCUMENT_ROOT'].'/../var/cache',
@@ -18,9 +22,8 @@ abstract class AbstractController
             return file_exists($fullfilename);
         });
         $this->twig->addFunction($fileExist);
+        $this->twig->addGlobal('session', $_SESSION);
 
-       $this->twig->addGlobal('session', $_SESSION);
-
+        $this->mailService = new MailService();
     }
-
 }

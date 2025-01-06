@@ -5,6 +5,8 @@ namespace src\Controller;
 use Mpdf\Mpdf;
 use Mpdf\Output\Destination;
 use src\Model\Expatriate;
+use src\Service\MailService;
+use Twig\Environment;
 
 class ExpatriateController extends AbstractController
 {
@@ -14,20 +16,21 @@ class ExpatriateController extends AbstractController
         return $this->twig->render('expatriate/index.html.twig',['expatriates' => $expatriates]);
     }
 
-    public function add()
+    public function add(MailService $mailService, Environment $twig)
     {
         UserController::isConnected();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $country = $this->calculCountry($_POST['Latitude'], $_POST['Longitude']);
             try {
-            $departureDate = !empty($_POST['DepartureDate']) ? new \DateTime($_POST['DepartureDate']) : null;
+                $country = $this->calculCountry($_POST['Latitude'], $_POST['Longitude']);
+                $departureDate = !empty($_POST['DepartureDate']) ? new \DateTime($_POST['DepartureDate']) : null;
+
 
                 $sqlRepository = null;
                 $imageName = null;
                 if (!empty($_FILES['Image']['name'])) {
-                    $tabExt = ['jpg', 'gif', 'png', 'jpeg'];
+                    $allowedExtensions = ['jpg', 'gif', 'png', 'jpeg'];
                     $extension = pathinfo($_FILES['Image']['name'], PATHINFO_EXTENSION);
-                    if (in_array(strtolower($extension), $tabExt)) {
+                    if (in_array(strtolower($extension), $allowedExtensions)) {
                         $dateNow = new \DateTime();
                         $sqlRepository = $dateNow->format('Y/m');
                         $repository = './uploads/images/' . $dateNow->format('Y/m');
@@ -35,13 +38,10 @@ class ExpatriateController extends AbstractController
                             mkdir($repository, 0777, true);
                         }
                         $imageName = md5(uniqid()) . '.' . $extension;
-
-
                         move_uploaded_file($_FILES['Image']['tmp_name'], $repository . '/' . $imageName);
                     }
                 }
 
-                // Créer un objet Expatriate et le remplir
                 $expatriate = new Expatriate();
                 $expatriate->setFirstname($_POST['Firstname'])
                     ->setLastname($_POST['Lastname'])
@@ -59,9 +59,20 @@ class ExpatriateController extends AbstractController
                     ->setGender($_POST['Gender']);
 
 
-                $result = Expatriate::SqlAdd($expatriate);
-                
-                if ($result) {
+                $insertedId = Expatriate::SqlAdd($expatriate);
+                $expatriate->setId($insertedId);
+                if ($insertedId) {
+                    $emailContent = $twig->render('email/confirmation.html.twig', [
+                        'expatriate' => $expatriate,
+                        'detailsUrl' => "http://www.helloworlders.local/Expatriate/details/" . $expatriate->getId(),
+                    ]);
+                    $mailService->send(
+                        'noreply@example.com',
+                        $expatriate->getEmail(),
+                        'Confirmation de votre enregistrement',
+                        $emailContent
+                    );
+
                     header('Location: /');
                     exit;
                 } else {
@@ -210,5 +221,22 @@ class ExpatriateController extends AbstractController
         ]);
         $mpdf->WriteHTML($this->twig->render('Expatriate/pdf.html.twig', ['expatriate' => $expatriate]));
         $mpdf->Output($fileName, \Mpdf\Output\Destination::DOWNLOAD);
+    }
+
+    private function sendConfirmationEmail(Expatriate $expatriate, MailService $mailService, Environment $twig)
+    {
+        $detailsUrl = "http://www.helloworlfers.local/Expatriate/details/" . $expatriate->getId();
+
+        $emailContent = $twig->render('Email/confirmation.html.twig', [
+            'expatriate' => $expatriate,
+            'detailsUrl' => $detailsUrl,
+        ]);
+
+        $mailService->send(
+            'noreply@helloworlders.com',
+            $expatriate->getEmail(),
+            'Confirmation de votre enregistrement',
+            $emailContent
+        );
     }
 }
