@@ -1,6 +1,11 @@
 <?php
 session_start();
 require '../vendor/autoload.php';
+
+use src\Service\MailService;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
+
 function loadClass($classe)
 {
     $ds = DIRECTORY_SEPARATOR;
@@ -13,23 +18,34 @@ function loadClass($classe)
 
 spl_autoload_register('loadClass');
 
+$loader = new FilesystemLoader($_SERVER['DOCUMENT_ROOT'] . '/../src/View');
+$twig = new Environment($loader, [
+    'cache' => $_SERVER['DOCUMENT_ROOT'] . '/../var/cache',
+    'debug' => true,
+]);
+$mailService = new MailService();
+
 $urls = explode('/', $_GET['url']);
-$controller = (isset($urls[0])) ? $urls[0] : '';
+$controllerName = (isset($urls[0])) ? $urls[0] : '';
 $action = (isset($urls[1])) ? $urls[1] : '';
 $param = (isset($urls[2])) ? $urls[2] : '';
 
-if($controller != ''){
+if ($controllerName != '') {
     try {
-        $class = "src\Controller\\{$controller}Controller";
+        $class = "src\Controller\\{$controllerName}Controller";
         if (class_exists($class)) {
             $controller = new $class();
             if (method_exists($controller, $action)) {
-                echo $controller->$action($param);
+                if ($action === 'add') {
+                    echo $controller->$action($mailService, $twig);
+                } else {
+                    echo $controller->$action($param);
+                }
             } else {
                 throw new \Exception("Action {$action} does not exist in controller {$class}");
             }
         } else {
-            throw new \Exception("Controller {$controller} does not exist");
+            throw new \Exception("Controller {$controllerName} does not exist");
         }
     }catch (\Exception $e){
 //        $controller = new \src\Controller\ErrorController();

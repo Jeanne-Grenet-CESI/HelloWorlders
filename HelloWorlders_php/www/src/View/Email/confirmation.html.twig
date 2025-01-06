@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmation d'enregistrement</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f9f9f9; padding: 20px;">
+<div style="max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); word-wrap: break-word;">
+    <h1 style="font-size: 24px; color: #5A803D; text-align: center;">Bonjour {{ expatriate.Firstname }} {{ expatriate.Lastname }}</h1>
+    <p style="font-size: 16px; color: #555;">Merci pour votre enregistrement. Voici vos informations complètes :</p>
+    <ul style="list-style: none; padding: 0; font-size: 16px; color: #555;">
+        <li><strong>Prénom :</strong> {{ expatriate.Firstname }}</li>
+        <li><strong>Nom :</strong> {{ expatriate.Lastname }}</li>
+        <li><strong>Email :</strong> {{ expatriate.Email }}</li>
+        <li><strong>Genre :</strong>
+            {% if expatriate.Gender == 'men' %}
+                Homme
+            {% elseif expatriate.Gender == 'women' %}
+                Femme
+            {% elseif expatriate.Gender == 'other' %}
+                Autre
+            {% else %}
+                Inconnu
+            {% endif %}
+        </li>
+        <li><strong>Âge :</strong> {{ expatriate.Age }} ans</li>
+        <li><strong>Pays :</strong> {{ expatriate.Country }}</li>
+        <li><strong>Date d'arrivée :</strong> {{ expatriate.ArrivalDate|date("d/m/Y") }}</li>
+        <li><strong>Date de départ :</strong>
+            {% if expatriate.DepartureDate %}
+                {{ expatriate.DepartureDate|date("d/m/Y") }}
+            {% else %}
+                Non définie
+            {% endif %}
+        </li>
+        <li><strong>Latitude :</strong> {{ expatriate.Latitude }}</li>
+        <li><strong>Longitude :</strong> {{ expatriate.Longitude }}</li>
+        <li><strong>Nom d'utilisateur :</strong> {{ expatriate.Username }}</li>
+        <li><strong>Description :</strong>
+            <p style="white-space: pre-wrap; overflow-wrap: break-word;">
+                {{ expatriate.Description ?: "Aucune description fournie." }}
+            </p>
+        </li>
+    </ul>
+
+    <p style="text-align: center; margin-top: 20px;">
+        <a href="{{ detailsUrl }}"
+           style="display: inline-block; padding: 10px 20px; background-color: #5A803D; color: #fff; text-decoration: none; border-radius: 4px;">
+            Afficher les détails
+        </a>
+    </p>
+</div>
+</body>
+</html>

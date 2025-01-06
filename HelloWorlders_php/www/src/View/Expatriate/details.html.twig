@@ -15,7 +15,7 @@
             </div>
 
             <div class="mb-6">
-                <h2 class="text-xl font-semibold text-primary mb-4">Informations personnelles</h2>
+                <h2 class="text-xl font-semibold text-primary mb-2">Informations personnelles</h2>
                 <ul class="space-y-2">
                     <li><strong>Prénom :</strong> {{ expatriate.Firstname }}</li>
                     <li><strong>Nom :</strong> {{ expatriate.Lastname }}</li>
@@ -37,14 +37,14 @@
             </div>
 
             <div class="mb-6">
-                <h2 class="text-xl font-semibold text-primary mb-4">Informations de contact</h2>
+                <h2 class="text-xl font-semibold text-primary mb-2">Informations de contact</h2>
                 <ul class="space-y-2">
                     <li><strong>Email :</strong> {{ expatriate.Email }}</li>
                 </ul>
             </div>
 
             <div class="mb-6">
-                <h2 class="text-xl font-semibold text-primary mb-4">Localisation</h2>
+                <h2 class="text-xl font-semibold text-primary mb-2">Localisation</h2>
                 <ul class="space-y-2">
                     <li><strong>Pays :</strong> {{ expatriate.Country }}</li>
                     <li><strong>Latitude :</strong> {{ expatriate.Latitude }}</li>
@@ -54,7 +54,7 @@
             </div>
 
             <div class="mb-6">
-                <h2 class="text-xl font-semibold text-primary mb-4">Dates</h2>
+                <h2 class="text-xl font-semibold text-primary mb-2">Dates</h2>
                 <ul class="space-y-2">
                     <li><strong>Date d'arrivée :</strong> {{ expatriate.ArrivalDate|date("d/m/Y") }}</li>
                     <li><strong>Date de départ :</strong>
@@ -68,23 +68,26 @@
             </div>
 
             <div class="mb-6">
-                <h2 class="text-xl font-semibold text-primary mb-4">Description</h2>
-                <p class="text-gray-600">{{ expatriate.Description }}</p>
+                <h2 class="text-xl font-semibold text-primary mb-2">Description</h2>
+                <p class="text-gray-600 rounded-lg break-words overflow-hidden">
+                    {{ expatriate.Description ?: "Aucune description fournie." }}
+                </p>
+
             </div>
 
-                <div class="flex justify-end mt-6 gap-4">
-                    <a href="/Expatriate/pdf/{{ expatriate.id }}" class="px-4 py-2 bg-primary text-white font-bold rounded hover:bg-primary-dark">
-                        Télécharger
-                    </a>
-            {% if session.login.Username == expatriate.Username %}
+            <div class="flex justify-end mt-6 gap-4">
+                <a href="/Expatriate/pdf/{{ expatriate.id }}" class="px-4 py-2 bg-primary text-white font-bold rounded hover:bg-primary-dark">
+                    Télécharger
+                </a>
+                {% if session.login.Username == expatriate.Username %}
                     <a href="/Expatriate/update/{{ expatriate.id }}" class="px-4 py-2 bg-primary text-white font-bold rounded hover:bg-primary-dark">
                         Modifier
                     </a>
                     <a href="/Expatriate/delete/{{ expatriate.id }}" class="px-4 py-2 bg-secondary text-white font-bold rounded hover:bg-primary-dark">
                         Supprimer
                     </a>
-            {% endif %}
-                </div>
+                {% endif %}
+            </div>
         </div>
     </div>
 
