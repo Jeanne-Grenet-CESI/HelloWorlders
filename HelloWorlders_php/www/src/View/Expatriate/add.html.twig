@@ -135,5 +135,33 @@
         });
     </script>
 
+    <script>
+        document.querySelector('form').addEventListener('submit', (event) => {
+            const arrivalDateField = document.getElementById('ArrivalDate');
+            const departureDateField = document.getElementById('DepartureDate');
+
+            const arrivalDate = new Date(arrivalDateField.value);
+            const departureDate = new Date(departureDateField.value);
+
+            // Réinitialiser les erreurs
+            arrivalDateField.classList.remove('border-red-500');
+            departureDateField.classList.remove('border-red-500');
+
+            // Vérifiez si DepartureDate est avant ArrivalDate
+            if (departureDateField.value && departureDate < arrivalDate) {
+                event.preventDefault(); // Empêche l'envoi du formulaire
+                departureDateField.classList.add('border-red-500'); // Ajoute une bordure rouge
+                const error = document.createElement('p');
+                error.textContent = 'La date de départ ne peut pas être antérieure à la date d\'arrivée.';
+                error.classList.add('text-red-500', 'text-sm', 'mt-1');
+
+                if (!departureDateField.nextElementSibling) {
+                    departureDateField.insertAdjacentElement('afterend', error);
+                }
+            }
+        });
+    </script>
+
+
 
 {% endblock %}
