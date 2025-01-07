@@ -56,6 +56,16 @@
                         Se déconnecter
                     </a>
                 </li>
+                <li>
+                    <a href="/User/account"
+                       class="block hover:opacity-80" role="button">
+                        <img
+                                src="/assets/images/avatar.png"
+                                alt="{{ expatriate.Firstname }} {{ expatriate.Lastname }}"
+                                class="w-12 h-12 rounded-full mx-auto border-2 border-primary"
+                        />
+                    </a>
+                </li>
             {% else %}
                 <li>
                     <a href="/User/login"
