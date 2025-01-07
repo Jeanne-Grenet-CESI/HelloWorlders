@@ -4,6 +4,7 @@ namespace src\Controller;
 
 use Mpdf\Mpdf;
 use Mpdf\Output\Destination;
+use src\Model\BDD;
 use src\Model\Expatriate;
 use src\Service\MailService;
 use Twig\Environment;
@@ -221,6 +222,37 @@ class ExpatriateController extends AbstractController
         ]);
         $mpdf->WriteHTML($this->twig->render('Expatriate/pdf.html.twig', ['expatriate' => $expatriate]));
         $mpdf->Output($fileName, \Mpdf\Output\Destination::DOWNLOAD);
+    }
+
+    public function fixtures()
+    {
+        $requete = BDD::getInstance()->prepare("TRUNCATE TABLE expatriate");
+        $requete->execute();
+        $firstnameArray = ["Jeanne", "Arthur", "Nico", "Antoine", "Laura"];
+        $lastnameArray = ["Dupont", "Durand", "Martin", "Bernard", "Lefevre"];
+        $emailArray = ["j@j.fr", "a@a.fr", "n@n.fr", "l@l.fr"];
+        $date = date('Y-m-d H:i:s');
+        for ($i = 0; $i < 200; $i++) {
+            $firstname = $firstnameArray[rand(0, 4)];
+            $lastname = $lastnameArray[rand(0, 4)];
+            $email = $emailArray[rand(0, 3)];
+            $date = date('Y-m-d H:i:s', strtotime($date . " + 1 days"));
+            $expatriate = new Expatriate();
+            $expatriate->setFirstname($firstname)
+                ->setLastname($lastname)
+                ->setEmail($email)
+                ->setArrivalDate(new \DateTime($date))
+                ->setLatitude(rand(-90, 90))
+                ->setLongitude(rand(-180, 180))
+                ->setCountry("France")
+                ->setImageRepository(null)
+                ->setImageFileName(null)
+                ->setAge(rand(18, 99))
+                ->setUsername("toto")
+                ->setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam maximus maximus ex, et venenatis ligula viverra ut. Donec commodo, eros semper efficitur facilisis");
+            Expatriate::SqlAdd($expatriate);
+        }
+        header('Location: /');
     }
 
 }
