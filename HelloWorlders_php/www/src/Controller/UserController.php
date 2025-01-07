@@ -2,6 +2,7 @@
 
 namespace src\Controller;
 
+use Src\Model\Expatriate;
 use Src\Model\User;
 use src\Service\JwtService;
 
@@ -97,6 +98,14 @@ class UserController extends AbstractController
             "Email" => $user->getEmail(),
             "Username" => $user->getUsername()
         ]);
+    }
+
+    public function account()
+    {
+        self::isConnected();
+        $user = User::SqlGetByMail($_SESSION["login"]["Email"]);
+        $expatriates = Expatriate::SqlGetByUser($user->getUsername());
+        return $this->twig->render("User/account.html.twig", ['expatriates' => $expatriates, 'user' => $user]);
     }
 
 }

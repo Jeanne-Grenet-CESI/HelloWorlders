@@ -330,6 +330,38 @@ class Expatriate  implements \JsonSerializable
         }
     }
 
+    public static function SqlGetByUser(string $username)
+    {
+        $request = BDD::getInstance()->prepare('SELECT * FROM expatriate WHERE Username = :Username');
+        $request->bindValue(':Username', $username);
+        $request->execute();
+
+        $expatriatesSql = $request->fetchAll(\PDO::FETCH_ASSOC);
+        $expatriates = [];
+        foreach ($expatriatesSql as $expatriateSql) {
+            $expatriate = new Expatriate();
+            $expatriate->setId($expatriateSql["Id"])
+                ->setFirstname($expatriateSql["Firstname"])
+                ->setLastname($expatriateSql["Lastname"])
+                ->setEmail($expatriateSql["Email"])
+                ->setArrivalDate(new \DateTime($expatriateSql["ArrivalDate"]))
+                ->setDepartureDate(!empty($expatriateSql["DepartureDate"]) ? new \DateTime($expatriateSql["DepartureDate"]) : null)
+                ->setLatitude($expatriateSql["Latitude"])
+                ->setLongitude($expatriateSql["Longitude"])
+                ->setCountry($expatriateSql["Country"])
+                ->setImageRepository($expatriateSql["ImageRepository"])
+                ->setImageFileName($expatriateSql["ImageFileName"])
+                ->setAge($expatriateSql["Age"])
+                ->setUsername($expatriateSql["Username"])
+                ->setDescription($expatriateSql["Description"])
+                ->setGender($expatriateSql["Gender"]);
+            $expatriates[] = $expatriate;
+        }
+        return $expatriates;
+    }
+
+
+
     public function jsonSerialize(): mixed
     {
         return [
