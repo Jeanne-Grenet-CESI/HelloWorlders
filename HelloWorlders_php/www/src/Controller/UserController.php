@@ -53,10 +53,10 @@ class UserController extends AbstractController
 
                     header("Location: /");
                 } else {
-                    throw new \Exception("Incorect password for {$_POST["mail"]}");
+                    throw new \Exception("Mot de passe incorrect pour {$_POST["mail"]}");
                 }
             } else {
-                throw new \Exception("No user with this mail in database");
+                throw new \Exception("Aucun user avec ce mail en base");
             }
         } else {
             return $this->twig->render("User/login.html.twig");

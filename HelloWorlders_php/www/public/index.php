@@ -42,14 +42,14 @@ if ($controllerName != '') {
                     echo $controller->$action($param);
                 }
             } else {
-                throw new \Exception("Action {$action} does not exist in controller {$class}");
+                throw new \Exception("l'action {$action} n'éxiste pas dan le controlleur {$class}");
             }
         } else {
-            throw new \Exception("Controller {$controllerName} does not exist");
+            throw new \Exception("Le controlleur {$controllerName} n'existe pas");
         }
     }catch (\Exception $e){
-//        $controller = new \src\Controller\ErrorController();
-//        echo $controller->error($e->getMessage());
+        $controller = new \src\Controller\ErrorController();
+        echo $controller->error($e->getMessage());
         //TODO : Implement later
     }
 }else {

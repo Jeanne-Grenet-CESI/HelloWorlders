@@ -67,7 +67,7 @@ class ExpatriateController extends AbstractController
                         'detailsUrl' => "http://www.helloworlders.local/Expatriate/details/" . $expatriate->getId(),
                     ]);
                     $mailService->send(
-                        'noreply@example.com',
+                        'noreply@helloworlders.local',
                         $expatriate->getEmail(),
                         'Confirmation de votre enregistrement',
                         $emailContent
@@ -223,20 +223,4 @@ class ExpatriateController extends AbstractController
         $mpdf->Output($fileName, \Mpdf\Output\Destination::DOWNLOAD);
     }
 
-    private function sendConfirmationEmail(Expatriate $expatriate, MailService $mailService, Environment $twig)
-    {
-        $detailsUrl = "http://www.helloworlfers.local/Expatriate/details/" . $expatriate->getId();
-
-        $emailContent = $twig->render('Email/confirmation.html.twig', [
-            'expatriate' => $expatriate,
-            'detailsUrl' => $detailsUrl,
-        ]);
-
-        $mailService->send(
-            'noreply@helloworlders.com',
-            $expatriate->getEmail(),
-            'Confirmation de votre enregistrement',
-            $emailContent
-        );
-    }
 }
