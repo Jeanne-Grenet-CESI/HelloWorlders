@@ -249,7 +249,7 @@ class ExpatriateController extends AbstractController
                 ->setImageRepository(null)
                 ->setImageFileName(null)
                 ->setAge(rand(18, 99))
-                ->setUsername("toto")
+                ->setUsername("admin")
                 ->setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam maximus maximus ex, et venenatis ligula viverra ut. Donec commodo, eros semper efficitur facilisis");
             Expatriate::SqlAdd($expatriate);
         }
