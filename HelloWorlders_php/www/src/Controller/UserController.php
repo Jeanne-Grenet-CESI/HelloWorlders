@@ -10,12 +10,15 @@ class UserController extends AbstractController
 {
     public function create()
     {
-        if (isset($_POST["mail"]) && isset($_POST["password"])) {
+        if (isset($_POST["mail"]) && isset($_POST["password"]) && isset($_POST["username"])) {
             $user = new User();
             $hashpass = password_hash($_POST["password"], PASSWORD_BCRYPT, ["cost" => 12]);
+
             $user->setEmail($_POST["mail"])
                 ->setPassword($hashpass)
-                ->setUsername($_POST["username"]);
+                ->setUsername($_POST["username"])
+                ->setIsAdmin(false); // Toujours false par défaut
+
             $id = User::SqlAdd($user);
             header("Location:/User/login");
             exit();
@@ -24,11 +27,20 @@ class UserController extends AbstractController
         }
     }
 
+
     public static function isConnected()
     {
         if (!isset($_SESSION["login"])) {
             header("Location:/User/login");
         }
+    }
+
+    public static function isAdmin()
+    {
+        if (!isset($_SESSION["login"]) || !$_SESSION["login"]["IsAdmin"]) {
+            throw new \Exception("Vous n'êtes pas autorisé à accéder à cette page ou cette fonctionnalité");
+        }
+
     }
 
     public function logout()
@@ -49,6 +61,7 @@ class UserController extends AbstractController
                     $_SESSION["login"] = [
                         "Email" => $user->getEmail(),
                         "Username" => $user->getUsername(),
+                        "IsAdmin" => $user->getIsAdmin()
                     ];
 
                     header("Location: /");
@@ -86,11 +99,11 @@ class UserController extends AbstractController
         }
 
         $user = User::SqlGetByMail($json->Email);
-        if($user === null){
+        if ($user === null) {
             header('HTTP/1.1 403 Forbiden');
             return json_encode(["status" => "error", "message" => "Utilisateur inconnu"]);
         }
-        if(!password_verify($json->Password, $user->getPassword())){
+        if (!password_verify($json->Password, $user->getPassword())) {
             header('HTTP/1.1 403 Forbiden');
             return json_encode(["status" => "error", "message" => "Mot de passe incorrect"]);
         }

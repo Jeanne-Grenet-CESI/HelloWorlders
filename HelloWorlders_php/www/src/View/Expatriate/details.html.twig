@@ -79,7 +79,7 @@
                 <a href="/Expatriate/pdf/{{ expatriate.id }}" class="px-4 py-2 bg-primary text-white font-bold rounded hover:bg-primary-dark">
                     Télécharger
                 </a>
-                {% if session.login.Username == expatriate.Username %}
+                {% if session.login.Username == expatriate.Username or session.login.IsAdmin %}
                     <a href="/Expatriate/update/{{ expatriate.id }}" class="px-4 py-2 bg-primary text-white font-bold rounded hover:bg-primary-dark">
                         Modifier
                     </a>

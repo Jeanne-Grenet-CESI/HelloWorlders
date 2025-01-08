@@ -14,7 +14,7 @@ class ExpatriateController extends AbstractController
     public function index()
     {
         $expatriates = Expatriate::SqlGetAll();
-        return $this->twig->render('expatriate/index.html.twig',['expatriates' => $expatriates]);
+        return $this->twig->render('expatriate/index.html.twig', ['expatriates' => $expatriates]);
     }
 
     public function add(MailService $mailService, Environment $twig)
@@ -92,7 +92,7 @@ class ExpatriateController extends AbstractController
         UserController::isConnected();
         $expatriate = Expatriate::SqlGetById($id);
 
-        if ($expatriate->getUsername() !== $_SESSION['login']['Username']) {
+        if ($expatriate->getUsername() !== $_SESSION['login']['Username'] && !$_SESSION['login']['IsAdmin']) {
             throw new \Exception("Vous n'êtes pas autorisé à modifier cet expatrié.");
         }
 
@@ -166,7 +166,7 @@ class ExpatriateController extends AbstractController
         UserController::isConnected();
         $expatriate = Expatriate::SqlGetById($id);
 
-        if ($expatriate->getUsername() !== $_SESSION['login']['Username']) {
+        if ($expatriate->getUsername() !== $_SESSION['login']['Username'] && !$_SESSION['login']['IsAdmin']) {
             throw new \Exception("Vous n'êtes pas autorisé à supprimer cet expatrié.");
         }
 
@@ -177,7 +177,7 @@ class ExpatriateController extends AbstractController
         exit;
     }
 
-    private function deleteImage(string $repository, string $fileName): void
+    private function deleteImage(string|null $repository, string|null $fileName): void
     {
         $imagePath = "{$_SERVER["DOCUMENT_ROOT"]}/uploads/images/{$repository}/{$fileName}";
         if (!empty($fileName) && file_exists($imagePath)) {
@@ -185,7 +185,7 @@ class ExpatriateController extends AbstractController
         }
     }
 
-   static function calculCountry(float $latitude, float $longitude): ?string
+    static function calculCountry(float $latitude, float $longitude): ?string
     {
         // URL de l'API Nominatim
         $url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=$latitude&lon=$longitude&accept-language=fr";
@@ -218,7 +218,7 @@ class ExpatriateController extends AbstractController
         $fileName = $expatriate->getFirstname() . '_' . $expatriate->getLastname() . '.pdf';
 
         $mpdf = new Mpdf([
-            "tempDir"=> $_SERVER['DOCUMENT_ROOT']."/../var/cache/expatriate/".$expatriate->getId().'/pdf'
+            "tempDir" => $_SERVER['DOCUMENT_ROOT'] . "/../var/cache/expatriate/" . $expatriate->getId() . '/pdf'
         ]);
         $mpdf->WriteHTML($this->twig->render('Expatriate/pdf.html.twig', ['expatriate' => $expatriate]));
         $mpdf->Output($fileName, \Mpdf\Output\Destination::DOWNLOAD);
@@ -226,6 +226,7 @@ class ExpatriateController extends AbstractController
 
     public function fixtures()
     {
+        UserController::isAdmin();
         $requete = BDD::getInstance()->prepare("TRUNCATE TABLE expatriate");
         $requete->execute();
         $firstnameArray = ["Jeanne", "Arthur", "Nico", "Antoine", "Laura"];

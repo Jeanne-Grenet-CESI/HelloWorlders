@@ -10,6 +10,19 @@ class User
 
     private string $Username;
 
+    private bool $IsAdmin = false;
+
+    public function setIsAdmin(bool $IsAdmin): User
+    {
+        $this->IsAdmin = $IsAdmin ? 1 : 0;
+        return $this;
+    }
+
+    public function getIsAdmin(): bool
+    {
+        return (bool) $this->IsAdmin;
+    }
+
     public function getId(): ?int
     {
         return $this->Id;
@@ -56,14 +69,19 @@ class User
 
     public static function SqlAdd(User $user): int
     {
-        $request = BDD::getInstance()->prepare("INSERT INTO user (Email, Password, Username ) VALUES(:Email, :Password, :Username)");
+        $request = BDD::getInstance()->prepare("
+        INSERT INTO user (Email, Password, Username, IsAdmin)
+        VALUES (:Email, :Password, :Username, :IsAdmin)
+    ");
         $request->execute([
             "Email" => $user->getEmail(),
             "Password" => $user->getPassword(),
-            "Username" => $user->getUsername()
+            "Username" => $user->getUsername(),
+            "IsAdmin" => 0
         ]);
         return BDD::getInstance()->lastInsertId();
     }
+
 
     public static function SqlGetByMail(string $mail): ?User
     {
@@ -77,7 +95,8 @@ class User
             $user->setId($data["Id"])
                 ->setEmail($data["Email"])
                 ->setPassword($data["Password"])
-                ->setUsername($data["Username"]);
+                ->setUsername($data["Username"])
+                ->setIsAdmin($data["IsAdmin"]);
             return $user;
         }
         return null;
