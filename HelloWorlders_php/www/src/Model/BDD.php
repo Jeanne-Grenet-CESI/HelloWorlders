@@ -7,7 +7,7 @@ use PDO;
 class BDD
 {
     private static $_instance = null;
-    private const _DBHOSTNAME_ = "hello-worlders-mariadb106";
+    private const _DBHOSTNAME_ = "database";
     private const _DBUSERNAME_ = "docker";
     private const _DBPASSWORD_ = "docker";
     private const _DBNAME_ = "docker";
