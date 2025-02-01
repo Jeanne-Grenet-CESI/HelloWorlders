@@ -43,7 +43,7 @@
 /helloworlders_flutter/.flutter-plugins-dependencies
 /helloworlders_flutter/.pub-cache/
 /helloworlders_flutter/.pub/
-/helloworlders_flutter//build/
+/helloworlders_flutter/build/
 
 # Symbolication related
 /helloworlders_flutter/app.*.symbols
