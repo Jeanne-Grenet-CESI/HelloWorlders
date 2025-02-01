@@ -55,3 +55,6 @@
 /helloworlders_flutter/android/app/debug
 /helloworlders_flutter/android/app/profile
 /helloworlders_flutter/android/app/release
+
+# Env file
+/helloworlders_flutter/.env
