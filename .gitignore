@@ -8,3 +8,53 @@
 /HelloWorlders_php/www/var/*
 .DS_Store
 /HelloWorlders_php/buildtest
+
+
+
+
+# Miscellaneous
+/helloworlders_flutter/*.class
+/helloworlders_flutter/*.log
+/helloworlders_flutter/*.pyc
+/helloworlders_flutter/*.swp
+/helloworlders_flutter/.DS_Store
+/helloworlders_flutter/.atom/
+/helloworlders_flutter/.buildlog/
+/helloworlders_flutter/.history
+/helloworlders_flutter/.svn/
+/helloworlders_flutter/migrate_working_dir/
+
+# IntelliJ related
+/helloworlders_flutter/*.iml
+/helloworlders_flutter/*.ipr
+/helloworlders_flutter/*.iws
+/helloworlders_flutter/.idea/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
+
+# Flutter/Dart/Pub related
+/helloworlders_flutter/**/doc/api/
+/helloworlders_flutter/**/ios/Flutter/.last_build_id
+/helloworlders_flutter/.dart_tool/
+/helloworlders_flutter/.flutter-plugins
+/helloworlders_flutter/.flutter-plugins-dependencies
+/helloworlders_flutter/.pub-cache/
+/helloworlders_flutter/.pub/
+/helloworlders_flutter/build/
+
+# Symbolication related
+/helloworlders_flutter/app.*.symbols
+
+# Obfuscation related
+/helloworlders_flutter/app.*.map.json
+
+# Android Studio will place build artifacts here
+/helloworlders_flutter/android/app/debug
+/helloworlders_flutter/android/app/profile
+/helloworlders_flutter/android/app/release
+
+# Env file
+/helloworlders_flutter/.env
