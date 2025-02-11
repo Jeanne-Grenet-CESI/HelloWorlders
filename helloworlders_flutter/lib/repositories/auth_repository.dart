@@ -31,4 +31,32 @@ class AuthRepository {
       };
     }
   }
+
+  Future<Map<String, dynamic>> register(
+    String username,
+    String password,
+    String email,
+  ) async {
+    try {
+      Map<String, dynamic> response =
+          await apiAuthService.register(username, password, email);
+
+      if (response["statusCode"] != 200) {
+        return {
+          "status": "error",
+          "message": response["body"]["message"] ?? "Erreur inconnue",
+        };
+      }
+
+      return {
+        "status": "success",
+        "message": "Compte enregistré",
+      };
+    } catch (e) {
+      return {
+        "status": "error",
+        "message": "Erreur lors de l'enregistrement : ${e.toString()}",
+      };
+    }
+  }
 }

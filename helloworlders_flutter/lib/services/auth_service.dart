@@ -18,4 +18,29 @@ class ApiAuthService {
 
     return {"statusCode": response.statusCode, "body": response.body};
   }
+
+  Future<Map<String, dynamic>> register(
+    String username,
+    String password,
+    String email,
+  ) async {
+    String url = "${dotenv.env['API_URL']}/User/register";
+
+    final http.Response response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': "application/json",
+      },
+      body: jsonEncode({
+        "Email": email,
+        "Password": password,
+        "Username": username,
+      }),
+    );
+
+    return {
+      "statusCode": response.statusCode,
+      "body": jsonDecode(response.body)
+    };
+  }
 }
