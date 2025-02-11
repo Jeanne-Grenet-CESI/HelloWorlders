@@ -75,7 +75,15 @@ class _RegisterPageState extends State<RegisterPage> {
                   'assets/img/helloworlders.svg',
                   height: 200,
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 20),
+                Text(
+                  "Créer un compte",
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.secondary),
+                ),
+                const SizedBox(height: 20),
                 TextField(
                   controller: _usernameController,
                   decoration: InputDecoration(
@@ -132,41 +140,69 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 _isLoading
                     ? const CircularProgressIndicator()
-                    : OutlinedButton(
-                        onPressed: _register,
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor:
-                              Theme.of(context).colorScheme.secondary,
-                          side: BorderSide(
-                            color: Theme.of(context).colorScheme.secondary,
-                            width: 2,
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          TextButton(
+                            onPressed: () =>
+                                Navigator.pushNamed(context, '/login'),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.arrow_back,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                                const SizedBox(width: 4),
+                                const Text(
+                                  "Retour",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                              ],
+                            ),
                           ),
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 12,
-                            horizontal: 16,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Text(
-                              "Envoyer",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
+                          OutlinedButton(
+                            onPressed: _register,
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor:
+                                  Theme.of(context).colorScheme.secondary,
+                              side: BorderSide(
+                                color: Theme.of(context).colorScheme.secondary,
+                                width: 2,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 12,
+                                horizontal: 16,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
                               ),
                             ),
-                            const SizedBox(width: 8),
-                            Icon(
-                              Icons.arrow_forward,
-                              color: Theme.of(context).colorScheme.secondary,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Text(
+                                  "Envoyer",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Icon(
+                                  Icons.arrow_forward,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
+                          ),
+                        ],
+                      )
               ],
             ),
           ),
