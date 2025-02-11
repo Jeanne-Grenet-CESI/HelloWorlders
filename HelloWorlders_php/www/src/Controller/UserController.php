@@ -113,6 +113,56 @@ class UserController extends AbstractController
         ]);
     }
 
+    public function register()
+    {
+        header('Content-Type: application/json; charset=utf-8');
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('HTTP/1.1 405 Method Not Allowed');
+            echo json_encode(["status" => "error", "message" => "Méthode non autorisée, POST attendu"]);
+            exit();
+        }
+
+        $data = file_get_contents('php://input');
+        $json = json_decode($data, true);
+
+        if (empty($json)) {
+            header('HTTP/1.1 400 Bad Request');
+            echo json_encode(["status" => "error", "message" => "Aucune donnée reçue"]);
+            exit();
+        }
+
+        if (!isset($json["Username"]) || !isset($json["Email"]) || !isset($json["Password"])) {
+            header('HTTP/1.1 400 Bad Request');
+            echo json_encode(["status" => "error", "message" => "Données manquantes"]);
+            exit();
+        }
+
+        if (User::SqlGetByMail($json["Email"]) !== null) {
+            header('HTTP/1.1 409 Conflict');
+            echo json_encode(["status" => "error", "message" => "Cet email est déjà utilisé"]);
+            exit();
+        }
+
+        $user = new User();
+        $hashpass = password_hash($json["Password"], PASSWORD_BCRYPT, ["cost" => 12]);
+
+        $user->setUsername($json["Username"])
+            ->setEmail($json["Email"])
+            ->setPassword($hashpass)
+            ->setIsAdmin(false); 
+
+        $id = User::SqlAdd($user);
+
+        if ($id) {
+            echo json_encode(["status" => "success", "message" => "Inscription réussie"]);
+        } else {
+            header('HTTP/1.1 500 Internal Server Error');
+            echo json_encode(["status" => "error", "message" => "Erreur lors de l'inscription"]);
+        }
+        exit();
+    }
+
     public function account()
     {
         self::isConnected();

@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-
 import 'package:helloworlders_flutter/repositories/auth_repository.dart';
 import 'package:helloworlders_flutter/services/auth_service.dart';
 
-class LoginPage extends StatefulWidget {
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
+
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _RegisterPageState createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final AuthRepository _authRepository =
@@ -18,16 +20,17 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
   String? _errorMessage;
 
-  Future<void> _login() async {
+  Future<void> _register() async {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
     });
 
+    final username = _usernameController.text.trim();
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
-    if (email.isEmpty || password.isEmpty) {
+    if (username.isEmpty || email.isEmpty || password.isEmpty) {
       setState(() {
         _isLoading = false;
         _errorMessage = "Veuillez remplir tous les champs.";
@@ -35,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    final response = await _authRepository.login(email, password);
+    final response = await _authRepository.register(username, email, password);
 
     setState(() {
       _isLoading = false;
@@ -43,12 +46,12 @@ class _LoginPageState extends State<LoginPage> {
 
     if (response["status"] == "success") {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Connexion réussie !"),
+        const SnackBar(
+          content: Text("Inscription réussie !"),
           backgroundColor: Colors.green,
         ),
       );
-      Navigator.pushReplacementNamed(context, "/home");
+      Navigator.pushReplacementNamed(context, "/login");
     } else {
       setState(() {
         _errorMessage = response["message"];
@@ -72,7 +75,29 @@ class _LoginPageState extends State<LoginPage> {
                   'assets/img/helloworlders.svg',
                   height: 200,
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 20),
+                Text(
+                  "Créer un compte",
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.secondary),
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: _usernameController,
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.person,
+                        color: Theme.of(context).colorScheme.primary),
+                    hintText: 'Nom d’utilisateur',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                          color: Theme.of(context).colorScheme.primary),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
                 TextField(
                   controller: _emailController,
                   decoration: InputDecoration(
@@ -80,11 +105,6 @@ class _LoginPageState extends State<LoginPage> {
                         color: Theme.of(context).colorScheme.primary),
                     hintText: 'Email',
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.primary),
-                    ),
-                    enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(
                           color: Theme.of(context).colorScheme.primary),
@@ -104,11 +124,6 @@ class _LoginPageState extends State<LoginPage> {
                       borderSide: BorderSide(
                           color: Theme.of(context).colorScheme.primary),
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.primary),
-                    ),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -117,19 +132,41 @@ class _LoginPageState extends State<LoginPage> {
                     padding: const EdgeInsets.only(bottom: 16.0),
                     child: Text(
                       _errorMessage!,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.red,
                         fontSize: 14,
                       ),
                     ),
                   ),
                 _isLoading
-                    ? CircularProgressIndicator()
+                    ? const CircularProgressIndicator()
                     : Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
+                          TextButton(
+                            onPressed: () =>
+                                Navigator.pushNamed(context, '/login'),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.arrow_back,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                                const SizedBox(width: 4),
+                                const Text(
+                                  "Retour",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                              ],
+                            ),
+                          ),
                           OutlinedButton(
-                            onPressed: _login,
+                            onPressed: _register,
                             style: OutlinedButton.styleFrom(
                               foregroundColor:
                                   Theme.of(context).colorScheme.secondary,
@@ -165,32 +202,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                         ],
-                      ),
-                const SizedBox(height: 16),
-                Container(
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/register');
-                    },
-                    child: Text.rich(
-                      TextSpan(
-                        text: "Vous n’avez pas encore de compte ? ",
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                        children: [
-                          TextSpan(
-                            text: "Créez en un ici !",
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.secondary,
-                            ),
-                          ),
-                        ],
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
+                      )
               ],
             ),
           ),
