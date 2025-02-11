@@ -1,7 +1,9 @@
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:helloworlders_flutter/services/auth_service.dart';
 
 class AuthRepository {
   final ApiAuthService apiAuthService;
+  final FlutterSecureStorage storage = const FlutterSecureStorage();
 
   const AuthRepository({
     required this.apiAuthService,
@@ -19,9 +21,12 @@ class AuthRepository {
         };
       }
 
+      String token = response["body"];
+      await storage.write(key: "jwt_token", value: token);
+
       return {
         "status": "success",
-        "token": response["body"],
+        "token": token,
         "message": "Connexion réussie",
       };
     } catch (e) {
