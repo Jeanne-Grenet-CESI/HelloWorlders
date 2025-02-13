@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:helloworlders_flutter/global/utils.dart';
+import 'package:helloworlders_flutter/models/expatriate.dart';
 
-class ExpatriateResume extends StatefulWidget {
-  const ExpatriateResume({super.key});
+class ExpatriateResume extends StatelessWidget {
+  final Expatriate expatriate;
 
-  @override
-  State<ExpatriateResume> createState() => _ExpatriateResumeState();
-}
+  const ExpatriateResume({super.key, required this.expatriate});
 
-class _ExpatriateResumeState extends State<ExpatriateResume> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -19,16 +18,27 @@ class _ExpatriateResumeState extends State<ExpatriateResume> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          const Icon(
-            Icons.account_circle,
-            size: 60,
-          ),
+          expatriate.imageRepository != null && expatriate.imageFileName != null
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(30),
+                  child: Image.network(
+                    Global.getImagePath(
+                        expatriate.imageRepository!, expatriate.imageFileName!),
+                    width: 60,
+                    height: 60,
+                    fit: BoxFit.cover,
+                  ),
+                )
+              : const Icon(
+                  Icons.account_circle,
+                  size: 60,
+                ),
           const SizedBox(width: 20),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Jeanne Grenet",
+                '${expatriate.firstName} ${expatriate.lastName}', // Utilisation du nom de l'expatrié
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -47,10 +57,10 @@ class _ExpatriateResumeState extends State<ExpatriateResume> {
                         color: Theme.of(context).colorScheme.secondary,
                       ),
                     ),
-                    const TextSpan(
-                      text: "France",
-                      style: TextStyle(
-                        fontSize: 14,
+                    TextSpan(
+                      text: expatriate.country, // Pays de l'expatrié
+                      style: const TextStyle(
+                        fontSize: 12,
                         fontWeight: FontWeight.w500,
                         color: Colors.black,
                       ),
@@ -69,10 +79,12 @@ class _ExpatriateResumeState extends State<ExpatriateResume> {
                         color: Theme.of(context).colorScheme.secondary,
                       ),
                     ),
-                    const TextSpan(
-                      text: "11/01/2025",
-                      style: TextStyle(
-                        fontSize: 14,
+                    TextSpan(
+                      text: expatriate.arrivalDate != null
+                          ? Global.formatDate(expatriate.arrivalDate!)
+                          : 'Non renseigné', // Date d’arrivée
+                      style: const TextStyle(
+                        fontSize: 12,
                         fontWeight: FontWeight.w500,
                         color: Colors.black,
                       ),
@@ -91,10 +103,12 @@ class _ExpatriateResumeState extends State<ExpatriateResume> {
                         color: Theme.of(context).colorScheme.secondary,
                       ),
                     ),
-                    const TextSpan(
-                      text: "15/04/2025",
-                      style: TextStyle(
-                        fontSize: 14,
+                    TextSpan(
+                      text: expatriate.departureDate != null
+                          ? Global.formatDate(expatriate.departureDate!)
+                          : 'Non renseigné', // Date de départ
+                      style: const TextStyle(
+                        fontSize: 12,
                         fontWeight: FontWeight.w500,
                         color: Colors.black,
                       ),
