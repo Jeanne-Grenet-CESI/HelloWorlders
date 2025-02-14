@@ -1,35 +1,35 @@
 class Expatriate {
-  final String? id;
-  final String? firstName;
-  final String? lastName;
-  final String? email;
-  final DateTime? arrivalDate;
+  final String id;
+  final String firstName;
+  final String lastName;
+  final String email;
+  final DateTime arrivalDate;
   final DateTime? departureDate;
-  final double? latitude;
-  final double? longitude;
-  final String? country;
+  final double latitude;
+  final double longitude;
+  final String country;
   final String? imageRepository;
   final String? imageFileName;
   final String? gender;
-  final int? age;
-  final String? username;
+  final int age;
+  final String username;
   final String? description;
 
   Expatriate({
-    this.id,
-    this.firstName,
-    this.lastName,
-    this.email,
-    this.arrivalDate,
+    required this.id,
+    required this.firstName,
+    required this.lastName,
+    required this.email,
+    required this.arrivalDate,
     this.departureDate,
-    this.latitude,
-    this.longitude,
-    this.country,
+    required this.latitude,
+    required this.longitude,
+    required this.country,
     this.imageRepository,
     this.imageFileName,
     this.gender,
-    this.age,
-    this.username,
+    required this.age,
+    required this.username,
     this.description,
   });
 
@@ -39,9 +39,7 @@ class Expatriate {
       firstName: json['Firstname'],
       lastName: json['Lastname'],
       email: json['Email'],
-      arrivalDate: json['ArrivalDate'] != null
-          ? DateTime.tryParse(json['ArrivalDate'])
-          : null,
+      arrivalDate: DateTime.parse(json['ArrivalDate']),
       departureDate: json['DepartureDate'] != null
           ? DateTime.tryParse(json['DepartureDate'])
           : null,
