@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:helloworlders_flutter/pages/home_page.dart';
 import 'package:helloworlders_flutter/pages/login_page.dart';
 import 'package:helloworlders_flutter/pages/register_page.dart';
 import 'package:helloworlders_flutter/theme/theme.dart';
@@ -17,9 +18,9 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      initialRoute: '/login',
+      initialRoute: '/home',
       routes: <String, WidgetBuilder>{
-        '/home': (context) => Placeholder(),
+        '/home': (context) => HomePage(),
         '/login': (context) => LoginPage(),
         '/register': (context) => RegisterPage(),
       },
