@@ -3,35 +3,45 @@ import 'package:helloworlders_flutter/services/expatriate_service.dart';
 
 class ExpatriateRepository {
   final ApiExpatriateService apiExpatriateService;
+  final int _limit = 30;
 
-  const ExpatriateRepository({required this.apiExpatriateService});
+  ExpatriateRepository({required this.apiExpatriateService});
 
-  Future<Map<String, dynamic>> getAll() async {
+  Future<Map<String, dynamic>> getAll({
+    bool isLoadMore = false,
+    required int page,
+  }) async {
     try {
-      Map<String, dynamic> response = await apiExpatriateService.getAll();
+      final offset = page * _limit;
 
-      if (response["statusCode"] != 200) {
+      List<dynamic> response = await apiExpatriateService.getAll(
+        limit: _limit,
+        offset: offset,
+      );
+
+      if (response.isEmpty) {
         return {
-          "status": "error",
-          "message": response["body"]["message"] ?? "Erreur inconnue",
+          "status": "success",
+          "message": "No more data",
           "expatriates": [],
+          "hasMoreData": false
         };
       }
 
-      final List<Expatriate> expatriates =
-          Expatriate.listFromJson(response["body"]);
+      final List<Expatriate> expatriates = Expatriate.listFromJson(response);
 
       return {
         "status": "success",
-        "message": "Profils récupérés",
+        "message": "Profiles retrieved",
         "expatriates": expatriates,
+        "hasMoreData": expatriates.length == _limit
       };
     } catch (e) {
       return {
         "status": "error",
-        "message":
-            "Erreur lors de la récupération des expatriés : ${e.toString()}",
+        "message": "Error retrieving expatriates: ${e.toString()}",
         "expatriates": [],
+        "hasMoreData": false
       };
     }
   }

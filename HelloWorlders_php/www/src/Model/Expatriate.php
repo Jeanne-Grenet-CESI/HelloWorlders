@@ -220,33 +220,48 @@ class Expatriate  implements \JsonSerializable
     }
 
 
-    public static function SqlGetAll()
+    public static function SqlGetAll($limit = null, $offset = null)
     {
-        $request = BDD::getInstance()->prepare('SELECT * FROM expatriate ORDER BY Id DESC');
+        $sql = 'SELECT * FROM expatriate ORDER BY Id DESC';
+
+        if ($limit !== null && $offset !== null) {
+            $sql .= ' LIMIT :limit OFFSET :offset';
+        }
+
+        $request = BDD::getInstance()->prepare($sql);
+
+        if ($limit !== null && $offset !== null) {
+            $request->bindValue(':limit', (int) $limit, \PDO::PARAM_INT);
+            $request->bindValue(':offset', (int) $offset, \PDO::PARAM_INT);
+        }
+
         $request->execute();
         $expatriatesSql = $request->fetchAll(\PDO::FETCH_ASSOC);
         $expatriatesObjet = [];
+
         foreach ($expatriatesSql as $expatriateSql) {
             $expatriate = new Expatriate();
-            $expatriate->setId($expatriateSql["Id"])
-                ->setFirstname($expatriateSql["Firstname"])
-                ->setLastname($expatriateSql["Lastname"])
-                ->setEmail($expatriateSql["Email"])
-                ->setArrivalDate(new \DateTime($expatriateSql["ArrivalDate"]))
-                ->setDepartureDate(!empty($expatriateSql["DepartureDate"]) ? new \DateTime($expatriateSql["DepartureDate"]) : null)
-                ->setLatitude($expatriateSql["Latitude"])
-                ->setLongitude($expatriateSql["Longitude"])
-                ->setCountry($expatriateSql["Country"])
-                ->setImageRepository($expatriateSql["ImageRepository"])
-                ->setImageFileName($expatriateSql["ImageFileName"])
-                ->setAge($expatriateSql["Age"])
-                ->setUsername($expatriateSql["Username"])
-                ->setDescription($expatriateSql["Description"])
-                ->setGender($expatriateSql["Gender"]);
+            $expatriate->setId($expatriateSql['Id'])
+                ->setFirstname($expatriateSql['Firstname'])
+                ->setLastname($expatriateSql['Lastname'])
+                ->setEmail($expatriateSql['Email'])
+                ->setArrivalDate(new \DateTime($expatriateSql['ArrivalDate']))
+                ->setDepartureDate(!empty($expatriateSql['DepartureDate']) ? new \DateTime($expatriateSql['DepartureDate']) : null)
+                ->setLatitude($expatriateSql['Latitude'])
+                ->setLongitude($expatriateSql['Longitude'])
+                ->setCountry($expatriateSql['Country'])
+                ->setImageRepository($expatriateSql['ImageRepository'])
+                ->setImageFileName($expatriateSql['ImageFileName'])
+                ->setAge($expatriateSql['Age'])
+                ->setUsername($expatriateSql['Username'])
+                ->setDescription($expatriateSql['Description'])
+                ->setGender($expatriateSql['Gender']);
             $expatriatesObjet[] = $expatriate;
         }
+
         return $expatriatesObjet;
     }
+
 
     public static function SqlGetById( int $Id)
     {

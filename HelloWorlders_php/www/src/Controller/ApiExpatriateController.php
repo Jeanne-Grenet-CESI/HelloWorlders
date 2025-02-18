@@ -15,13 +15,16 @@ class ApiExpatriateController {
 
     public function getAll()
     {
-
+        
         if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
             header('HTTP/1.1 405 Method Not Allowed');
             return json_encode(["status" => "error", "message" => "Méthode non autorisée, GET attendu"]);
         }
 
-        $expatriates = Expatriate::SqlGetAll();
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : null;
+        $offset = isset($_GET['offset']) ? (int)$_GET['offset'] : null;
+
+        $expatriates = Expatriate::SqlGetAll($limit, $offset);
         return json_encode($expatriates);
     }
 
