@@ -34,6 +34,10 @@ class Expatriate {
   });
 
   factory Expatriate.fromJson(Map<String, dynamic> json) {
+    final genderMap = {
+      'men': 'Homme',
+      'women': 'Femme',
+    };
     return Expatriate(
       id: json['Id'].toString(),
       firstName: json['Firstname'],
@@ -48,7 +52,7 @@ class Expatriate {
       country: json['Country'],
       imageRepository: json['ImageRepository'],
       imageFileName: json['ImageFileName'],
-      gender: json['Gender'],
+      gender: genderMap[json['Gender']] ?? 'Non spécifié',
       age: json['Age'],
       username: json['Username'],
       description: json['Description'],
