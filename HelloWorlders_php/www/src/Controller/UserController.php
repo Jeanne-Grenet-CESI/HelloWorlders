@@ -170,5 +170,67 @@ class UserController extends AbstractController
         $expatriates = Expatriate::SqlGetByUser($user->getUsername());
         return $this->twig->render("User/account.html.twig", ['expatriates' => $expatriates, 'user' => $user]);
     }
+    public function apiAccount()
+    {
+        ini_set('display_errors', 0);
+
+        header('Content-Type: application/json; charset=utf-8');
+
+        try {
+            $result = JwtService::checkToken();
+
+            if ($result['status'] !== 'success') {
+                http_response_code(401);
+                echo json_encode(['message' => 'Token invalide']);
+                exit;
+            }
+
+            $user = User::SqlGetByMail($result['data']->Email);
+            $expatriates = Expatriate::SqlGetByUser($user->getUsername());
+
+            $userData = [
+                'id' => $user->getId(),
+                'username' => $user->getUsername(),
+                'email' => $user->getEmail(),
+                'isAdmin' => $user->getIsAdmin()
+            ];
+
+            $expatriatesData = [];
+            foreach ($expatriates as $expatriate) {
+                $arrivalDate = $expatriate->getArrivalDate();
+                $departureDate = $expatriate->getDepartureDate();
+
+                $expatriateData = [
+                    'Id' => $expatriate->getId() ?? 0,
+                    'Firstname' => $expatriate->getFirstname() ?? '',
+                    'Lastname' => $expatriate->getLastname() ?? '',
+                    'Email' => $expatriate->getEmail() ?? '',
+                    'ArrivalDate' => $arrivalDate ? $arrivalDate->format('Y-m-d') : date('Y-m-d'),
+                    'DepartureDate' => $departureDate ? $departureDate->format('Y-m-d') : null,
+                    'Latitude' => $expatriate->getLatitude() ?? 0.0,
+                    'Longitude' => $expatriate->getLongitude() ?? 0.0,
+                    'Country' => $expatriate->getCountry() ?? '',
+                    'ImageRepository' => $expatriate->getImageRepository(),
+                    'ImageFileName' => $expatriate->getImageFileName(),
+                    'Gender' => $expatriate->getGender(),
+                    'Age' => $expatriate->getAge() ?? 0,
+                    'Username' => $expatriate->getUsername() ?? '',
+                    'Description' => $expatriate->getDescription()
+                ];
+
+                $expatriatesData[] = $expatriateData;
+            }
+
+            echo json_encode([
+                'user' => $userData,
+                'expatriates' => $expatriatesData
+            ]);
+
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode(['message' => 'Erreur: ' . $e->getMessage()]);
+        }
+        exit;
+    }
 
 }
