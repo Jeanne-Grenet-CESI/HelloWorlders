@@ -35,6 +35,17 @@ class UserController extends AbstractController
         }
     }
 
+    public static function apiIsConnected()
+    {
+        $jwtresult = JwtService::checkToken();
+        if($jwtresult["status"] === "success") {
+            return json_encode(["status" => "success", "message" => "Utilisateur connecté"]);
+        } else {
+            header('HTTP/1.1 401 Unauthorized');
+            return json_encode(["status" => "error", "message" => "Utilisateur non connecté"]);
+        }
+    }
+
     public static function isAdmin()
     {
         if (!isset($_SESSION["login"]) || !$_SESSION["login"]["IsAdmin"]) {

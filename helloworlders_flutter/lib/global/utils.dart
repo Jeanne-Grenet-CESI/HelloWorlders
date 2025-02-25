@@ -1,6 +1,6 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:helloworlders_flutter/global/http_interceptor.dart';
+
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
@@ -23,5 +23,16 @@ class Global {
     return '${dotenv.env['API_URL']}/uploads/images/$imageRepository/$imageFileName';
   }
 
-  static final http.Client httpClient = HttpInterceptor();
+  static Future<int> isAuthenticated() async {
+    String url = "${dotenv.env['API_URL']}/User/apiIsConnected";
+    final token = await getToken();
+    final http.Response response = await http.get(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': "application/json",
+        'Authorization': 'Bearer $token',
+      },
+    );
+    return response.statusCode;
+  }
 }

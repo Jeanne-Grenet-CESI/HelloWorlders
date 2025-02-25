@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
+import 'package:helloworlders_flutter/global/utils.dart';
+
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
 
@@ -25,15 +27,35 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   Row(
                     children: [
                       IconButton(
-                          onPressed: () => {},
+                          onPressed: () async {
+                            bool isAuth = await Global.isAuthenticated() == 200;
+                            if (isAuth) {
+                              Navigator.pushNamed(context, '/add-expatriate');
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      'Vous devez être connecté pour créer un profil.'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                              Navigator.pushNamed(context, '/login');
+                            }
+                          },
                           icon: Icon(
                             Icons.add_circle_outline,
                             color: Theme.of(context).colorScheme.secondary,
                             size: 36,
                           )),
                       IconButton(
-                          onPressed: () =>
-                              {Navigator.pushNamed(context, '/account')},
+                          onPressed: () async {
+                            bool isAuth = await Global.isAuthenticated() == 200;
+                            if (isAuth) {
+                              Navigator.pushNamed(context, '/account');
+                            } else {
+                              Navigator.pushNamed(context, '/login');
+                            }
+                          },
                           icon: Icon(
                             Icons.account_circle,
                             color: Theme.of(context).colorScheme.primary,

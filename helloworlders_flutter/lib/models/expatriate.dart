@@ -49,7 +49,7 @@ class Expatriate {
           : null,
       latitude: json['Latitude'].toDouble(),
       longitude: json['Longitude'].toDouble(),
-      country: json['Country'],
+      country: json['Country'] ?? 'Non spécifié',
       imageRepository: json['ImageRepository'],
       imageFileName: json['ImageFileName'],
       gender: genderMap[json['Gender']] ?? 'Non spécifié',

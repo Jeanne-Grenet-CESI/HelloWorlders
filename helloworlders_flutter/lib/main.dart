@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:helloworlders_flutter/global/navigator_observer.dart';
 import 'package:helloworlders_flutter/pages/account_page.dart';
+import 'package:helloworlders_flutter/pages/add_expatriate_page.dart';
 import 'package:helloworlders_flutter/pages/home_page.dart';
 import 'package:helloworlders_flutter/pages/login_page.dart';
 import 'package:helloworlders_flutter/pages/register_page.dart';
@@ -27,6 +28,7 @@ class MainApp extends StatelessWidget {
         '/login': (context) => LoginPage(),
         '/register': (context) => RegisterPage(),
         '/account': (context) => const AccountPage(),
+        '/add-expatriate': (context) => const AddExpatriatePage(),
       },
     );
   }
