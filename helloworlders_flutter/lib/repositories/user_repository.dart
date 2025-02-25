@@ -41,7 +41,6 @@ class UserRepository {
         "expatriates": expatriates,
       };
     } catch (e) {
-      print("Erreur dans getUserAccount: $e");
       return {
         "status": "error",
         "message": "Erreur lors de la récupération du compte: ${e.toString()}",

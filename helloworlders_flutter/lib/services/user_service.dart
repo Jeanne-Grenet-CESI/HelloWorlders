@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:helloworlders_flutter/global/utils.dart';
@@ -10,14 +11,15 @@ class ApiUserService {
   Future<Map<String, dynamic>> getUserInfo() async {
     try {
       String url = "${dotenv.env['API_URL']}/User/apiAccount";
+      final token = await Global.getToken();
 
-      final http.Response response = await Global.httpClient.get(
+      final http.Response response = await http.get(
         Uri.parse(url),
         headers: {
           'Content-Type': "application/json",
+          'Authorization': 'Bearer $token',
         },
       );
-      print(response.body);
       if (response.statusCode == 200) {
         return {
           "statusCode": response.statusCode,
