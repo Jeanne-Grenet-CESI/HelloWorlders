@@ -62,19 +62,14 @@ class ExpatriateRepository {
     File? profileImage,
   }) async {
     try {
-      // Validate and set default coordinates if not provided
-      final double validLatitude =
-          _validateCoordinate(latitude, 48.8566); // Paris default
-      final double validLongitude =
-          _validateCoordinate(longitude, 2.3522); // Paris default
+      final double validLatitude = _validateCoordinate(latitude, 48.8566);
+      final double validLongitude = _validateCoordinate(longitude, 2.3522);
 
-      // Convertir l'image en base64 si elle existe
       String? base64Image;
       if (profileImage != null) {
         base64Image = await apiExpatriateService.imageToBase64(profileImage);
       }
 
-      // Préparer les données pour l'API avec des valeurs par défaut sécurisées
       final Map<String, dynamic> expatriateData = {
         "Firstname": firstName.trim(),
         "Lastname": lastName.trim(),
@@ -88,12 +83,10 @@ class ExpatriateRepository {
         "Description": description.trim(),
       };
 
-      // Ajouter l'image si elle existe
       if (base64Image != null) {
         expatriateData["Image"] = base64Image;
       }
 
-      // Appeler l'API
       final response =
           await apiExpatriateService.createExpatriate(expatriateData);
 
@@ -119,12 +112,9 @@ class ExpatriateRepository {
     }
   }
 
-  // Helper method to validate coordinates
   double _validateCoordinate(double coordinate, double defaultValue) {
-    // Check if coordinate is within valid range (-90 to 90 for latitude, -180 to 180 for longitude)
     if (coordinate.isNaN ||
         (coordinate > 90 || coordinate < -90) && coordinate.abs() < 180) {
-      // If it looks like longitude was passed as latitude or vice versa, swap
       return defaultValue;
     }
     return coordinate;

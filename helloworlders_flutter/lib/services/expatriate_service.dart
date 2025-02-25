@@ -45,7 +45,6 @@ class ApiExpatriateService {
         body: jsonEncode(expatriateData),
       );
 
-      print(response.body);
       if (response.statusCode == 200) {
         return {
           "statusCode": response.statusCode,
@@ -65,7 +64,6 @@ class ApiExpatriateService {
     }
   }
 
-  // Convertir une image en base64 pour l'envoi à l'API
   Future<String?> imageToBase64(File imageFile) async {
     try {
       List<int> imageBytes = await imageFile.readAsBytes();

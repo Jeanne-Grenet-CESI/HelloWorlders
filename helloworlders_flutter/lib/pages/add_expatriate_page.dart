@@ -15,7 +15,6 @@ class AddExpatriatePage extends StatefulWidget {
 }
 
 class _AddExpatriatePageState extends State<AddExpatriatePage> {
-  // Form key and controllers
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
@@ -26,11 +25,10 @@ class _AddExpatriatePageState extends State<AddExpatriatePage> {
   final TextEditingController _departureDateController =
       TextEditingController();
   final TextEditingController _latitudeController =
-      TextEditingController(text: "48.8566"); // Paris default
+      TextEditingController(text: "48.8566");
   final TextEditingController _longitudeController =
       TextEditingController(text: "2.3522");
 
-  // State variables
   DateTime? _arrivalDate;
   DateTime? _departureDate;
   String _selectedGender = 'men';
@@ -47,7 +45,6 @@ class _AddExpatriatePageState extends State<AddExpatriatePage> {
     );
   }
 
-  // Helper to create styled form fields
   InputDecoration _getInputDecoration(String label, {Widget? suffixIcon}) {
     return InputDecoration(
       labelText: label,
@@ -71,7 +68,6 @@ class _AddExpatriatePageState extends State<AddExpatriatePage> {
     );
   }
 
-  // Show snackbar helper
   void _showSnackBar(String message, {bool isError = false}) {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -84,12 +80,10 @@ class _AddExpatriatePageState extends State<AddExpatriatePage> {
     }
   }
 
-  // Get current location
   Future<void> _getCurrentPosition() async {
     setState(() => _isLoading = true);
 
     try {
-      // Check location permission
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
@@ -110,7 +104,6 @@ class _AddExpatriatePageState extends State<AddExpatriatePage> {
         return;
       }
 
-      // Get current position
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
@@ -132,7 +125,6 @@ class _AddExpatriatePageState extends State<AddExpatriatePage> {
     }
   }
 
-  // Select image from gallery
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
@@ -141,7 +133,6 @@ class _AddExpatriatePageState extends State<AddExpatriatePage> {
     }
   }
 
-  // Show date picker
   Future<void> _selectDate(BuildContext context, bool isArrivalDate) async {
     final DateTime now = DateTime.now();
     final DateTime initialDate =
@@ -168,7 +159,6 @@ class _AddExpatriatePageState extends State<AddExpatriatePage> {
     }
   }
 
-  // Submit form
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
@@ -230,8 +220,6 @@ class _AddExpatriatePageState extends State<AddExpatriatePage> {
               ),
             ),
             const SizedBox(height: 20),
-
-            // Show error message if necessary
             if (_errorMessage.isNotEmpty)
               Container(
                 padding: const EdgeInsets.all(8),
@@ -242,8 +230,6 @@ class _AddExpatriatePageState extends State<AddExpatriatePage> {
                   style: const TextStyle(color: Colors.red),
                 ),
               ),
-
-            // Form
             Expanded(
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
@@ -253,7 +239,6 @@ class _AddExpatriatePageState extends State<AddExpatriatePage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Profile image
                             Center(
                               child: GestureDetector(
                                 onTap: _pickImage,
@@ -274,8 +259,6 @@ class _AddExpatriatePageState extends State<AddExpatriatePage> {
                               ),
                             ),
                             const SizedBox(height: 24),
-
-                            // Geographic coordinates
                             Text(
                               'Coordonnées géographiques',
                               style: TextStyle(
@@ -324,7 +307,6 @@ class _AddExpatriatePageState extends State<AddExpatriatePage> {
                               ),
                             ),
                             const SizedBox(height: 12),
-                            // Form fields
                             TextFormField(
                               controller: _firstNameController,
                               decoration: _getInputDecoration('Prénom'),
@@ -334,7 +316,6 @@ class _AddExpatriatePageState extends State<AddExpatriatePage> {
                                       : null,
                             ),
                             const SizedBox(height: 16),
-
                             TextFormField(
                               controller: _lastNameController,
                               decoration: _getInputDecoration('Nom'),
@@ -344,7 +325,6 @@ class _AddExpatriatePageState extends State<AddExpatriatePage> {
                                       : null,
                             ),
                             const SizedBox(height: 16),
-
                             TextFormField(
                               controller: _emailController,
                               decoration: _getInputDecoration('Email'),
@@ -360,7 +340,6 @@ class _AddExpatriatePageState extends State<AddExpatriatePage> {
                               },
                             ),
                             const SizedBox(height: 16),
-
                             TextFormField(
                               controller: _ageController,
                               decoration: _getInputDecoration('Âge'),
@@ -376,7 +355,6 @@ class _AddExpatriatePageState extends State<AddExpatriatePage> {
                               },
                             ),
                             const SizedBox(height: 16),
-
                             DropdownButtonFormField<String>(
                               value: _selectedGender,
                               decoration: _getInputDecoration('Genre'),
@@ -407,7 +385,6 @@ class _AddExpatriatePageState extends State<AddExpatriatePage> {
                               },
                             ),
                             const SizedBox(height: 16),
-
                             TextFormField(
                               controller: _arrivalDateController,
                               decoration: _getInputDecoration(
@@ -423,7 +400,6 @@ class _AddExpatriatePageState extends State<AddExpatriatePage> {
                                   : null,
                             ),
                             const SizedBox(height: 16),
-
                             TextFormField(
                               controller: _departureDateController,
                               decoration: _getInputDecoration(
@@ -435,7 +411,6 @@ class _AddExpatriatePageState extends State<AddExpatriatePage> {
                               onTap: () => _selectDate(context, false),
                             ),
                             const SizedBox(height: 16),
-
                             TextFormField(
                               controller: _descriptionController,
                               decoration: _getInputDecoration('Description'),
@@ -446,8 +421,6 @@ class _AddExpatriatePageState extends State<AddExpatriatePage> {
                                       : null,
                             ),
                             const SizedBox(height: 30),
-
-                            // Submit button
                             Center(
                               child: ElevatedButton(
                                 onPressed: _submitForm,

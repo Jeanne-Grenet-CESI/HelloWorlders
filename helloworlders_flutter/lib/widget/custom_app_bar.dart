@@ -50,7 +50,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                       IconButton(
                           onPressed: () async {
                             bool isAuth = await Global.isAuthenticated() == 200;
-                            print(isAuth);
                             if (isAuth) {
                               Navigator.pushNamed(context, '/account');
                             } else {
