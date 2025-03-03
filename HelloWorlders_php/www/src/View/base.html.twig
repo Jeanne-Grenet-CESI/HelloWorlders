@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{% block title %}Hello Worlders{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5A803D',
+                        secondary: '#D57E7E',
+                    },
+                },
+            },
+        };
+    </script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+</head>
+
+<body class="font-sans bg-gray-50 text-gray-800">
+
+<nav class="py-4 shadow-md bg-white">
+    <div class="container mx-auto flex flex-wrap items-center justify-between px-4">
+        <!-- Logo -->
+        <a href="/" class="flex items-center">
+            <img src="/assets/images/helloworlders.svg" alt="Hello Worlders Logo" class="h-16 w-16 sm:h-24 sm:w-24 mr-3">
+        </a>
+
+        <!-- Navigation Menu -->
+        <button class="block sm:hidden bg-primary text-white p-2 rounded focus:outline-none" id="menu-toggle">
+            Menu
+        </button>
+        <ul id="menu" class="hidden sm:flex flex-col sm:flex-row sm:space-x-6 sm:items-center w-full sm:w-auto mt-4 sm:mt-0 bg-white sm:bg-transparent p-4 sm:p-0 space-y-4 sm:space-y-0">
+            {% if session.login.IsAdmin  %}
+                <li>
+                    <a href="/Expatriate/fixtures"
+                       class="block text-center sm:inline p-3 bg-white rounded-md hover:opacity-80 text-secondary border border-secondary font-bold">
+                        Fixtures
+                    </a>
+                </li>
+            {% endif %}
+            {% if session.login is defined %}
+            <li>
+                <a href="/Expatriate/add"
+                   class="block text-center sm:inline p-3 bg-white rounded-md hover:opacity-80 text-secondary border border-secondary font-bold">
+                    Ajouter un profil
+                </a>
+            </li>
+                <li>
+                    <a href="/User/logout"
+                       class="block text-center sm:inline p-3 bg-primary rounded-md hover:opacity-80 text-white font-bold" role="button">
+                        Se déconnecter
+                    </a>
+                </li>
+                <li>
+                    <a href="/User/account"
+                       class="block hover:opacity-80" role="button">
+                        <img
+                                src="/assets/images/avatar.png"
+                                alt="{{ expatriate.Firstname }} {{ expatriate.Lastname }}"
+                                class="w-12 h-12 rounded-full mx-auto border-2 border-primary"
+                        />
+                    </a>
+                </li>
+            {% else %}
+                <li>
+                    <a href="/User/login"
+                       class="block text-center sm:inline p-3 bg-secondary rounded-md hover:opacity-80 text-white font-bold" role="button">
+                        Se connecter
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+
+<div class="container mx-auto p-4 sm:p-10">
+    {% block body %}
+    {% endblock %}
+</div>
+
+<script>
+    const menuToggle = document.getElementById('menu-toggle');
+    const menu = document.getElementById('menu');
+
+    menuToggle.addEventListener('click', () => {
+        menu.classList.toggle('hidden');
+    });
+</script>
+
+</body>
+</html>

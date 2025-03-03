@@ -1,0 +1,110 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <h1 class="text-3xl font-bold text-primary mb-6 text-center">Détails du profil</h1>
+
+    <div class="container mx-auto p-6">
+        <div class="bg-white shadow rounded-lg p-6 max-w-3xl mx-auto">
+            <div class="mb-6 text-center">
+                <img
+                        src="{{ expatriate.ImageRepository ? '/uploads/images/' ~ expatriate.ImageRepository ~ '/' ~ expatriate.ImageFileName : '/assets/images/avatar.png' }}"
+                        alt="{{ expatriate.Firstname }} {{ expatriate.Lastname }}"
+                        class="w-32 h-32 rounded-full mx-auto border-4 border-primary"
+                />
+            </div>
+
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-primary mb-2">Informations personnelles</h2>
+                <ul class="space-y-2">
+                    <li><strong>Prénom :</strong> {{ expatriate.Firstname }}</li>
+                    <li><strong>Nom :</strong> {{ expatriate.Lastname }}</li>
+                    <li>
+                        <strong>Genre :</strong>
+                        {% if expatriate.Gender == 'men' %}
+                            Homme
+                        {% elseif expatriate.Gender == 'women' %}
+                            Femme
+                        {% elseif expatriate.Gender == 'other' %}
+                            Autre
+                        {% else %}
+                            Inconnu
+                        {% endif %}
+                    </li>
+                    <li><strong>Âge :</strong> {{ expatriate.Age }} ans</li>
+                    <li><strong>Nom d'utilisateur :</strong> {{ expatriate.Username }}</li>
+                </ul>
+            </div>
+
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-primary mb-2">Informations de contact</h2>
+                <ul class="space-y-2">
+                    <li><strong>Email :</strong> {{ expatriate.Email }}</li>
+                </ul>
+            </div>
+
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-primary mb-2">Localisation</h2>
+                <ul class="space-y-2">
+                    <li><strong>Pays :</strong> {{ expatriate.Country }}</li>
+                    <li><strong>Latitude :</strong> {{ expatriate.Latitude }}</li>
+                    <li><strong>Longitude :</strong> {{ expatriate.Longitude }}</li>
+                </ul>
+                <div id="map" class="h-64 w-full rounded-lg mt-4 border"></div>
+            </div>
+
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-primary mb-2">Dates</h2>
+                <ul class="space-y-2">
+                    <li><strong>Date d'arrivée :</strong> {{ expatriate.ArrivalDate|date("d/m/Y") }}</li>
+                    <li><strong>Date de départ :</strong>
+                        {% if expatriate.DepartureDate %}
+                            {{ expatriate.DepartureDate|date("d/m/Y") }}
+                        {% else %}
+                            Non définie
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-primary mb-2">Description</h2>
+                <p class="text-gray-600 rounded-lg break-words overflow-hidden">
+                    {{ expatriate.Description ?: "Aucune description fournie." }}
+                </p>
+
+            </div>
+
+            <div class="flex justify-end mt-6 gap-4">
+                <a href="/Expatriate/pdf/{{ expatriate.id }}" class="px-4 py-2 bg-primary text-white font-bold rounded hover:bg-primary-dark">
+                    Télécharger
+                </a>
+                {% if session.login.Username == expatriate.Username or session.login.IsAdmin %}
+                    <a href="/Expatriate/update/{{ expatriate.id }}" class="px-4 py-2 bg-primary text-white font-bold rounded hover:bg-primary-dark">
+                        Modifier
+                    </a>
+                    <form method="post" action="/Expatriate/delete/{{ expatriate.id }}" class="inline">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                        <button type="submit" class="px-4 py-2 bg-secondary text-white font-bold rounded hover:bg-primary-dark">
+                            Supprimer
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script>
+        const map = L.map('map').setView([{{ expatriate.Latitude }}, {{ expatriate.Longitude }}], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        L.marker([{{ expatriate.Latitude }}, {{ expatriate.Longitude }}]).addTo(map)
+            .bindPopup("Localisation de {{ expatriate.Firstname }} {{ expatriate.Lastname }}")
+            .openPopup();
+    </script>
+
+{% endblock %}

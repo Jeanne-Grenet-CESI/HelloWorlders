@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <h1 class="text-3xl font-bold text-primary mb-6 text-center">Liste des profils</h1>
+
+    <div class="shadow-md rounded-lg mx-auto max-w-full bg-white border border-gray-200">
+        <table class="hidden md:table w-full">
+            <thead class="bg-primary text-white">
+            <tr>
+                <th class="px-4 py-3 text-left text-sm font-semibold">Nom</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold">Prénom</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold">Pays</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold">Date d'arrivée</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold">Date de départ</th>
+                <th class="px-4 py-3 text-center text-sm font-semibold">Actions</th>
+            </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+            {% for expatriate in expatriates %}
+                <tr>
+                    <td class="px-4 py-4 text-sm text-gray-700">{{ expatriate.Lastname }}</td>
+                    <td class="px-4 py-4 text-sm text-gray-700">{{ expatriate.Firstname }}</td>
+                    <td class="px-4 py-4 text-sm text-gray-700">{{ expatriate.Country }}</td>
+                    <td class="px-4 py-4 text-sm text-gray-700">{{ expatriate.ArrivalDate|date('d/m/Y') }}</td>
+                    <td class="px-4 py-4 text-sm text-gray-700">
+                        {{ expatriate.DepartureDate ? expatriate.DepartureDate|date('d/m/Y') : 'Non définie' }}
+                    </td>
+                    <td class="px-4 py-4 text-center">
+                        <a href="/Expatriate/details/{{ expatriate.id }}"
+                           class="inline-block py-1 px-3 bg-secondary text-white rounded-md hover:opacity-90 text-sm font-semibold">
+                            Voir plus
+                        </a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6" class="px-6 py-4 text-center text-gray-500">Aucun expatrié trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Stacked view for smaller screens -->
+        <div class="block md:hidden space-y-4">
+            {% for expatriate in expatriates %}
+                <div class="p-4 border-b border-gray-200">
+                    <div class="text-sm font-semibold text-gray-700">Nom : {{ expatriate.Lastname }}</div>
+                    <div class="text-sm text-gray-700">Prénom : {{ expatriate.Firstname }}</div>
+                    <div class="text-sm text-gray-700">Pays : {{ expatriate.Country }}</div>
+                    <div class="text-sm text-gray-700">Date d'arrivée : {{ expatriate.ArrivalDate|date('d/m/Y') }}</div>
+                    <div class="text-sm text-gray-700">Date de départ : {{ expatriate.DepartureDate|date('d/m/Y') }}</div>
+                    <div class="mt-2">
+                        <a href="/Expatriate/details/{{ expatriate.id }}"
+                           class="inline-block py-1 px-3 bg-secondary text-white rounded-md hover:opacity-90 text-sm font-semibold">
+                            Voir plus
+                        </a>
+                    </div>
+                </div>
+            {% else %}
+                <div class="p-4 text-center text-gray-500">Aucun expatrié trouvé</div>
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}
