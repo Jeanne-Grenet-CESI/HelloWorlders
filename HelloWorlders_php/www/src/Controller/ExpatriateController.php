@@ -22,9 +22,12 @@ class ExpatriateController extends AbstractController
         UserController::isConnected();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
+                if (!$this->isValidCsrfToken()) {
+                    throw new \Exception("Invalid CSRF token");
+                }
+
                 $country = $this->calculCountry($_POST['Latitude'], $_POST['Longitude']);
                 $departureDate = !empty($_POST['DepartureDate']) ? new \DateTime($_POST['DepartureDate']) : null;
-
 
                 $sqlRepository = null;
                 $imageName = null;
@@ -58,7 +61,6 @@ class ExpatriateController extends AbstractController
                     ->setUsername($_SESSION['login']['Username'])
                     ->setDescription($_POST['Description'])
                     ->setGender($_POST['Gender']);
-
 
                 $insertedId = Expatriate::SqlAdd($expatriate);
                 $expatriate->setId($insertedId);
@@ -98,6 +100,10 @@ class ExpatriateController extends AbstractController
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
+                if (!$this->isValidCsrfToken()) {
+                    throw new \Exception("Invalid CSRF token");
+                }
+
                 $sqlRepository = $expatriate->getImageRepository();
                 $nomImage = $expatriate->getImageFileName();
 
@@ -154,7 +160,6 @@ class ExpatriateController extends AbstractController
         return $this->twig->render('Expatriate/update.html.twig', ['expatriate' => $expatriate]);
     }
 
-
     function details(int $id)
     {
         $expatriate = Expatriate::SqlGetById($id);
@@ -164,6 +169,13 @@ class ExpatriateController extends AbstractController
     public function delete(int $id)
     {
         UserController::isConnected();
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!$this->isValidCsrfToken()) {
+                throw new \Exception("Invalid CSRF token");
+            }
+        }
+
         $expatriate = Expatriate::SqlGetById($id);
 
         if ($expatriate->getUsername() !== $_SESSION['login']['Username'] && !$_SESSION['login']['IsAdmin']) {
@@ -227,6 +239,13 @@ class ExpatriateController extends AbstractController
     public function fixtures()
     {
         UserController::isAdmin();
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!$this->isValidCsrfToken()) {
+                throw new \Exception("Invalid CSRF token");
+            }
+        }
+
         $requete = BDD::getInstance()->prepare("TRUNCATE TABLE expatriate");
         $requete->execute();
         $firstnameArray = ["Jeanne", "Arthur", "Nico", "Antoine", "Laura"];
@@ -255,5 +274,4 @@ class ExpatriateController extends AbstractController
         }
         header('Location: /');
     }
-
 }

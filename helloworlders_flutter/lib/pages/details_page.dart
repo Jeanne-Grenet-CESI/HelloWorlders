@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:helloworlders_flutter/models/expatriate.dart';
 import 'package:helloworlders_flutter/widget/custom_app_bar.dart';
+import 'package:helloworlders_flutter/widget/profile_avatar.dart';
+import 'package:helloworlders_flutter/widget/detail_info_row.dart';
 import 'package:helloworlders_flutter/global/utils.dart';
 
 class DetailPage extends StatelessWidget {
@@ -30,86 +32,47 @@ class DetailPage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Center(
-                child: expatriate.imageRepository != null &&
-                        expatriate.imageFileName != null
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(50),
-                        child: Image.network(
-                          Global.getImagePath(expatriate.imageRepository!,
-                              expatriate.imageFileName!),
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.cover,
-                        ),
-                      )
-                    : const Icon(Icons.account_circle, size: 100),
+                child: ProfileAvatar(
+                  imageRepository: expatriate.imageRepository,
+                  imageFileName: expatriate.imageFileName,
+                  initials: "${expatriate.firstName} ${expatriate.lastName}",
+                  radius: 50,
+                ),
               ),
               const SizedBox(height: 30),
-              Text(
-                "Informations personnelles",
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              _buildSectionTitle(context, "Informations personnelles"),
               const SizedBox(height: 10),
-              _buildInfoRow(context, "Prénom", expatriate.firstName),
-              _buildInfoRow(context, "Nom", expatriate.lastName),
-              _buildInfoRow(
-                  context, "Genre", expatriate.gender ?? "Non spécifié"),
-              _buildInfoRow(context, "Age", "${expatriate.age} ans"),
-              _buildInfoRow(context, "Nom d'utilisateur", expatriate.username),
+              DetailInfoRow(label: "Prénom", value: expatriate.firstName),
+              DetailInfoRow(label: "Nom", value: expatriate.lastName),
+              DetailInfoRow(
+                  label: "Genre", value: expatriate.gender ?? "Non spécifié"),
+              DetailInfoRow(label: "Age", value: "${expatriate.age} ans"),
+              DetailInfoRow(
+                  label: "Nom d'utilisateur", value: expatriate.username),
               const SizedBox(height: 20),
-              Text(
-                "Informations de contact",
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              _buildSectionTitle(context, "Informations de contact"),
               const SizedBox(height: 10),
-              _buildInfoRow(context, "Email", expatriate.email),
+              DetailInfoRow(label: "Email", value: expatriate.email),
               const SizedBox(height: 20),
-              Text(
-                "Localisation",
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              _buildSectionTitle(context, "Localisation"),
               const SizedBox(height: 10),
-              _buildInfoRow(context, "Pays", expatriate.country),
-              _buildInfoRow(
-                  context, "Latitude", expatriate.latitude.toString()),
-              _buildInfoRow(
-                  context, "Longitude", expatriate.longitude.toString()),
+              DetailInfoRow(label: "Pays", value: expatriate.country),
+              DetailInfoRow(
+                  label: "Latitude", value: expatriate.latitude.toString()),
+              DetailInfoRow(
+                  label: "Longitude", value: expatriate.longitude.toString()),
               const SizedBox(height: 20),
-              Text(
-                "Dates",
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              _buildSectionTitle(context, "Dates"),
               const SizedBox(height: 10),
-              _buildInfoRow(context, "Date d'arrivée",
-                  Global.formatDate(expatriate.arrivalDate)),
+              DetailInfoRow(
+                  label: "Date d'arrivée",
+                  value: Global.formatDate(expatriate.arrivalDate)),
               if (expatriate.departureDate != null)
-                _buildInfoRow(context, "Date de départ",
-                    Global.formatDate(expatriate.departureDate!)),
+                DetailInfoRow(
+                    label: "Date de départ",
+                    value: Global.formatDate(expatriate.departureDate!)),
               const SizedBox(height: 20),
-              Text(
-                "Description",
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              _buildSectionTitle(context, "Description"),
               const SizedBox(height: 10),
               Text(
                 expatriate.description ?? "Aucune description disponible",
@@ -122,31 +85,13 @@ class DetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(BuildContext context, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Text(
-            "$label : ",
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: Theme.of(context).colorScheme.secondary,
-            ),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
-            ),
-          ),
-        ],
+  Widget _buildSectionTitle(BuildContext context, String title) {
+    return Text(
+      title,
+      style: TextStyle(
+        fontSize: 20,
+        color: Theme.of(context).colorScheme.primary,
+        fontWeight: FontWeight.bold,
       ),
     );
   }

@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-
 import 'package:helloworlders_flutter/repositories/auth_repository.dart';
 import 'package:helloworlders_flutter/services/auth_service.dart';
+import 'package:helloworlders_flutter/widget/custom_text_field.dart';
+import 'package:helloworlders_flutter/widget/loading_indicator.dart';
+import 'package:helloworlders_flutter/widget/error_display.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -43,7 +47,7 @@ class _LoginPageState extends State<LoginPage> {
 
     if (response["status"] == "success") {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text("Connexion réussie !"),
           backgroundColor: Colors.green,
         ),
@@ -58,6 +62,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
@@ -73,68 +79,54 @@ class _LoginPageState extends State<LoginPage> {
                   height: 200,
                 ),
                 const SizedBox(height: 40),
-                TextField(
+                CustomTextField(
                   controller: _emailController,
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.email,
-                        color: Theme.of(context).colorScheme.primary),
-                    hintText: 'Email',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.primary),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.primary),
-                    ),
-                  ),
+                  labelText: 'Email',
+                  prefixIcon: Icon(Icons.email, color: colorScheme.primary),
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Veuillez entrer votre email';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16),
-                TextField(
+                CustomTextField(
                   controller: _passwordController,
+                  labelText: 'Mot de passe',
+                  prefixIcon: Icon(Icons.lock, color: colorScheme.primary),
                   obscureText: true,
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.lock,
-                        color: Theme.of(context).colorScheme.primary),
-                    hintText: 'Mot de passe',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.primary),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.primary),
-                    ),
-                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Veuillez entrer votre mot de passe';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 24),
                 if (_errorMessage != null)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),
-                    child: Text(
-                      _errorMessage!,
-                      style: TextStyle(
+                    child: ErrorDisplay(
+                      errorMessage: _errorMessage!,
+                      textStyle: const TextStyle(
                         color: Colors.red,
                         fontSize: 14,
                       ),
                     ),
                   ),
                 _isLoading
-                    ? CircularProgressIndicator()
+                    ? const LoadingIndicator(size: 30)
                     : Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           OutlinedButton(
                             onPressed: _login,
                             style: OutlinedButton.styleFrom(
-                              foregroundColor:
-                                  Theme.of(context).colorScheme.secondary,
+                              foregroundColor: colorScheme.secondary,
                               side: BorderSide(
-                                color: Theme.of(context).colorScheme.secondary,
+                                color: colorScheme.secondary,
                                 width: 2,
                               ),
                               padding: const EdgeInsets.symmetric(
@@ -158,8 +150,7 @@ class _LoginPageState extends State<LoginPage> {
                                 const SizedBox(width: 8),
                                 Icon(
                                   Icons.arrow_forward,
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
+                                  color: colorScheme.secondary,
                                 ),
                               ],
                             ),
@@ -167,28 +158,26 @@ class _LoginPageState extends State<LoginPage> {
                         ],
                       ),
                 const SizedBox(height: 16),
-                Container(
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/register');
-                    },
-                    child: Text.rich(
-                      TextSpan(
-                        text: "Vous n’avez pas encore de compte ? ",
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                        children: [
-                          TextSpan(
-                            text: "Créez en un ici !",
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.secondary,
-                            ),
-                          ),
-                        ],
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/register');
+                  },
+                  child: Text.rich(
+                    TextSpan(
+                      text: "Vous n'avez pas encore de compte ? ",
+                      style: TextStyle(
+                        color: colorScheme.onSurface,
                       ),
-                      textAlign: TextAlign.center,
+                      children: [
+                        TextSpan(
+                          text: "Créez en un ici !",
+                          style: TextStyle(
+                            color: colorScheme.secondary,
+                          ),
+                        ),
+                      ],
                     ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ],
@@ -197,5 +186,12 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 }

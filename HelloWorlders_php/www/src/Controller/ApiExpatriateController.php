@@ -70,12 +70,17 @@ class ApiExpatriateController {
         $country = ExpatriateController::calculCountry($json->Latitude, $json->Longitude);
         $username = $jwtresult["data"]->Username;
 
+        $departureDateObj = null;
+        if (isset($json->DepartureDate) && $json->DepartureDate !== null) {
+            $departureDateObj = new \DateTime($json->DepartureDate);
+        }
+
         $expatriate = new Expatriate();
         $expatriate->setFirstname( $json->Firstname)
             ->setLastname($json->Lastname)
             ->setEmail($json->Email)
             ->setArrivalDate(new \DateTime($json->ArrivalDate))
-            ->setDepartureDate(new \DateTime($json->DepartureDate))
+            ->setDepartureDate($departureDateObj)
             ->setLatitude($json->Latitude)
             ->setLongitude($json->Longitude)
             ->setCountry($country)
@@ -98,6 +103,11 @@ class ApiExpatriateController {
         }
 
         $expatriate = Expatriate::SqlGetById($id);
+
+        if (!$expatriate) {
+            header('HTTP/1.1 404 Not Found');
+            return json_encode(["status" => "error", "message" => "Expatrié introuvable"]);
+        }
         return json_encode($expatriate);
 
     }

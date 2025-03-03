@@ -5,6 +5,12 @@ import 'package:helloworlders_flutter/repositories/user_repository.dart';
 import 'package:helloworlders_flutter/services/user_service.dart';
 import 'package:helloworlders_flutter/widget/custom_app_bar.dart';
 import 'package:helloworlders_flutter/widget/expatriate_resume.dart';
+import 'package:helloworlders_flutter/widget/profile_avatar.dart';
+import 'package:helloworlders_flutter/widget/info_card.dart';
+import 'package:helloworlders_flutter/widget/loading_indicator.dart';
+import 'package:helloworlders_flutter/widget/error_display.dart';
+import 'package:helloworlders_flutter/widget/empty_state_display.dart';
+import 'package:helloworlders_flutter/global/utils.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -62,28 +68,28 @@ class _AccountPageState extends State<AccountPage> {
     await fetchUserAccount();
   }
 
+  Future<void> _logout() async {
+    await Global.clearToken();
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Vous avez été déconnecté avec succès."),
+          backgroundColor: Colors.green,
+        ),
+      );
+      Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+    }
+  }
+
   Widget _buildContent() {
     if (isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const LoadingIndicator();
     }
 
     if (errorMessage.isNotEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              errorMessage,
-              style: const TextStyle(color: Colors.red),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _refresh,
-              child: const Text('Réessayer'),
-            ),
-          ],
-        ),
+      return ErrorDisplay(
+        errorMessage: errorMessage,
+        onRetry: _refresh,
       );
     }
 
@@ -96,59 +102,34 @@ class _AccountPageState extends State<AccountPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Card(
-                elevation: 2,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Center(
-                        child: CircleAvatar(
-                          radius: 40,
-                          backgroundColor:
-                              Theme.of(context).colorScheme.primary,
-                          child: Text(
-                            user!.username.substring(0, 1).toUpperCase(),
-                            style: const TextStyle(
-                              fontSize: 36,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Center(
-                        child: Text(
-                          user!.username,
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Center(
-                        child: Text(
-                          user!.email,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ),
-                      if (user!.isAdmin) ...[
-                        const SizedBox(height: 8),
-                        Center(
-                          child: Chip(
-                            label: const Text('Administrateur'),
-                            backgroundColor:
-                                Theme.of(context).colorScheme.secondary,
-                            labelStyle: const TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ],
-                    ],
+              InfoCard(
+                leading: ProfileAvatar(
+                  radius: 40,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  initials: user!.username,
+                ),
+                title: user!.username,
+                subtitle: user!.email,
+                trailing: user!.isAdmin
+                    ? Chip(
+                        label: const Text('Administrateur'),
+                        backgroundColor:
+                            Theme.of(context).colorScheme.secondary,
+                        labelStyle: const TextStyle(color: Colors.white),
+                      )
+                    : null,
+              ),
+              const SizedBox(height: 16),
+              Center(
+                child: OutlinedButton.icon(
+                  onPressed: _logout,
+                  icon: const Icon(Icons.logout),
+                  label: const Text('Déconnexion'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.red,
+                    side: const BorderSide(color: Colors.red),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
                   ),
                 ),
               ),
@@ -163,18 +144,9 @@ class _AccountPageState extends State<AccountPage> {
               ),
               const SizedBox(height: 16),
               if (userExpatriates.isEmpty)
-                const Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        Text(
-                          "Vous n'avez pas encore créé de profil d'expatrié",
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  ),
+                const EmptyStateDisplay(
+                  message: "Vous n'avez pas encore créé de profil d'expatrié",
+                  icon: Icons.person_off,
                 )
               else
                 ListView.builder(

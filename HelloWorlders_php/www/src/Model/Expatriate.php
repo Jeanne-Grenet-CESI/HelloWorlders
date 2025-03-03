@@ -269,6 +269,11 @@ class Expatriate  implements \JsonSerializable
         $request->bindValue(':Id', $Id);
         $request->execute();
         $expatriateSql = $request->fetch(\PDO::FETCH_ASSOC);
+
+        if (!$expatriateSql) {
+            return null;
+        }
+
         $expatriate = new Expatriate();
         $expatriate->setId($expatriateSql["Id"])
             ->setFirstname($expatriateSql["Firstname"])
@@ -382,11 +387,11 @@ class Expatriate  implements \JsonSerializable
         if ($country !== null) {
             $sql .= ' AND Country = :country';
         }
-        
+
         if ($startDate !== null && $endDate !== null) {
             $sql .= ' AND (ArrivalDate <= :endDate) AND (DepartureDate >= :startDate OR DepartureDate IS NULL)';
         } else if ($startDate !== null) {
-            $sql .= ' AND (DepartureDate >= :startDate OR DepartureDate IS NULL)';
+            $sql .= ' AND ((ArrivalDate >= :startDate) OR (DepartureDate >= :startDate OR DepartureDate IS NULL))';
         } else if ($endDate !== null) {
             $sql .= ' AND (ArrivalDate <= :endDate)';
         }
