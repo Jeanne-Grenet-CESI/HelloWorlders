@@ -13,6 +13,7 @@ class CsrfTokenService
 
         if (!isset($_SESSION[self::TOKEN_NAME])) {
             $_SESSION[self::TOKEN_NAME] = bin2hex(random_bytes(32));
+
         }
 
         return $_SESSION[self::TOKEN_NAME];
