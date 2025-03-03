@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:helloworlders_flutter/repositories/expatriate_repository.dart';
 import 'package:helloworlders_flutter/widget/custom_app_bar.dart';
 import 'package:helloworlders_flutter/widget/expatriate_resume.dart';
+import 'package:helloworlders_flutter/widget/filter_section.dart';
 import 'package:helloworlders_flutter/services/expatriate_service.dart';
 import 'package:helloworlders_flutter/models/expatriate.dart';
 import 'package:intl/intl.dart';
@@ -144,7 +145,6 @@ class _HomePageState extends State<HomePage> {
     await fetchExpatriates();
   }
 
-  // Méthode pour réinitialiser tous les filtres
   void _resetAllFilters() {
     setState(() {
       selectedCountry = null;
@@ -154,6 +154,26 @@ class _HomePageState extends State<HomePage> {
       hasMoreData = true;
       errorMessage = '';
       expatriates = [];
+    });
+    fetchExpatriates();
+  }
+
+  void _handleCountryChanged(String? value) {
+    setState(() {
+      selectedCountry = value;
+      currentPage = 0;
+      expatriates = [];
+      hasMoreData = true;
+    });
+    fetchExpatriates();
+  }
+
+  void _handleClearCountry() {
+    setState(() {
+      selectedCountry = null;
+      currentPage = 0;
+      expatriates = [];
+      hasMoreData = true;
     });
     fetchExpatriates();
   }
@@ -254,9 +274,11 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("Aucun profil ne correspond aux critères sélectionnés",
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+            Text(
+              "Aucun profil ne correspond aux critères sélectionnés",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Theme.of(context).colorScheme.primary),
+            ),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _resetAllFilters,
@@ -295,202 +317,12 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildCountryFilter() {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-      ),
-      decoration: BoxDecoration(
-        border: Border.all(color: Theme.of(context).colorScheme.primary),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    isExpanded: true,
-                    hint: const Text("Sélectionner un pays"),
-                    value: selectedCountry,
-                    items: [
-                      const DropdownMenuItem<String>(
-                        value: null,
-                        child: Text("Tous les pays"),
-                      ),
-                      ...countries
-                          .map((country) => DropdownMenuItem<String>(
-                                value: country,
-                                child: Text(country),
-                              ))
-                          .toList(),
-                    ],
-                    onChanged: (value) {
-                      setState(() {
-                        selectedCountry = value;
-                        currentPage = 0;
-                        expatriates = [];
-                        hasMoreData = true;
-                      });
-                      fetchExpatriates();
-                    },
-                  ),
-                ),
-              ),
-              if (selectedCountry != null)
-                IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: () {
-                    setState(() {
-                      selectedCountry = null;
-                      currentPage = 0;
-                      expatriates = [];
-                      hasMoreData = true;
-                    });
-                    fetchExpatriates();
-                  },
-                ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDateFilters() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        border: Border.all(color: Theme.of(context).colorScheme.primary),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Période de présence :",
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.primary,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                child: GestureDetector(
-                  onTap: () => _selectDate(context, true),
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                          color: Theme.of(context).colorScheme.primary),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.calendar_month,
-                          size: 16,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            filterStartDate != null
-                                ? dateFormatter.format(filterStartDate!)
-                                : "Date de début *",
-                            style: TextStyle(
-                              color: filterStartDate != null
-                                  ? Colors.black
-                                  : Colors.grey,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: GestureDetector(
-                  onTap: filterStartDate != null
-                      ? () => _selectDate(context, false)
-                      : () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                  'Veuillez d\'abord sélectionner une date de début'),
-                              backgroundColor: Colors.orange,
-                            ),
-                          );
-                        },
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: filterStartDate != null
-                            ? Theme.of(context).colorScheme.primary
-                            : Colors.grey,
-                      ),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.calendar_month,
-                          size: 16,
-                          color: filterStartDate != null
-                              ? Theme.of(context).colorScheme.primary
-                              : Colors.grey,
-                        ),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            filterEndDate != null
-                                ? dateFormatter.format(filterEndDate!)
-                                : "Date de fin",
-                            style: TextStyle(
-                              color: filterEndDate != null
-                                  ? Colors.black
-                                  : (filterStartDate != null
-                                      ? Colors.grey
-                                      : Colors.grey),
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              if (filterStartDate != null || filterEndDate != null)
-                IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: _resetDateFilters,
-                  tooltip: "Effacer les filtres de dates",
-                ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomAppBar(),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 40),
+        padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -506,10 +338,20 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 20),
-            _buildCountryFilter(),
-            const SizedBox(height: 10),
-            _buildDateFilters(),
-            const SizedBox(height: 10),
+            FilterSection(
+              selectedCountry: selectedCountry,
+              countries: countries,
+              filterStartDate: filterStartDate,
+              filterEndDate: filterEndDate,
+              resultsCount: expatriates.length,
+              isLoading: isLoading,
+              onCountryChanged: _handleCountryChanged,
+              onClearCountry: _handleClearCountry,
+              onSelectDate: _selectDate,
+              onResetDateFilters: _resetDateFilters,
+              onResetAllFilters: _resetAllFilters,
+            ),
+            const SizedBox(height: 16),
             Expanded(child: _buildContent()),
           ],
         ),
