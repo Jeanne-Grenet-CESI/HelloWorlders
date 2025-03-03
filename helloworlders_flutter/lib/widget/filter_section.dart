@@ -118,26 +118,6 @@ class _FilterSectionState extends State<FilterSection>
                     ),
                   ),
                   const Spacer(),
-                  if (hasActiveFilters && _isExpanded)
-                    TextButton.icon(
-                      onPressed: widget.onResetAllFilters,
-                      icon: Icon(
-                        Icons.refresh,
-                        size: 16,
-                        color: Theme.of(context).colorScheme.secondary,
-                      ),
-                      label: Text(
-                        "Réinitialiser",
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary,
-                          fontSize: 14,
-                        ),
-                      ),
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        minimumSize: const Size(0, 36),
-                      ),
-                    ),
                   const SizedBox(width: 8),
                   if (hasActiveFilters && !_isExpanded)
                     Container(

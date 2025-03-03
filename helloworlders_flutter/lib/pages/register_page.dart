@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:helloworlders_flutter/repositories/auth_repository.dart';
 import 'package:helloworlders_flutter/services/auth_service.dart';
+import 'package:helloworlders_flutter/widget/custom_text_field.dart';
+import 'package:helloworlders_flutter/widget/loading_indicator.dart';
+import 'package:helloworlders_flutter/widget/error_display.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -38,7 +41,7 @@ class _RegisterPageState extends State<RegisterPage> {
       return;
     }
 
-    final response = await _authRepository.register(username, email, password);
+    final response = await _authRepository.register(username, password, email);
 
     setState(() {
       _isLoading = false;
@@ -61,6 +64,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
@@ -79,99 +84,94 @@ class _RegisterPageState extends State<RegisterPage> {
                 Text(
                   "Créer un compte",
                   style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.secondary),
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.secondary,
+                  ),
                 ),
                 const SizedBox(height: 20),
-                TextField(
+                CustomTextField(
                   controller: _usernameController,
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.person,
-                        color: Theme.of(context).colorScheme.primary),
-                    hintText: 'Nom d’utilisateur',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.primary),
-                    ),
-                  ),
+                  labelText: "Nom d'utilisateur",
+                  prefixIcon: Icon(Icons.person, color: colorScheme.primary),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Veuillez entrer un nom d'utilisateur";
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16),
-                TextField(
+                CustomTextField(
                   controller: _emailController,
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.email,
-                        color: Theme.of(context).colorScheme.primary),
-                    hintText: 'Email',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.primary),
-                    ),
-                  ),
+                  labelText: 'Email',
+                  prefixIcon: Icon(Icons.email, color: colorScheme.primary),
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Veuillez entrer votre email';
+                    }
+                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                        .hasMatch(value)) {
+                      return 'Veuillez entrer un email valide';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16),
-                TextField(
+                CustomTextField(
                   controller: _passwordController,
+                  labelText: 'Mot de passe',
+                  prefixIcon: Icon(Icons.lock, color: colorScheme.primary),
                   obscureText: true,
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.lock,
-                        color: Theme.of(context).colorScheme.primary),
-                    hintText: 'Mot de passe',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                          color: Theme.of(context).colorScheme.primary),
-                    ),
-                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Veuillez entrer un mot de passe';
+                    }
+                    if (value.length < 6) {
+                      return 'Le mot de passe doit contenir au moins 6 caractères';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 24),
                 if (_errorMessage != null)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),
-                    child: Text(
-                      _errorMessage!,
-                      style: const TextStyle(
+                    child: ErrorDisplay(
+                      errorMessage: _errorMessage!,
+                      textStyle: const TextStyle(
                         color: Colors.red,
                         fontSize: 14,
                       ),
                     ),
                   ),
                 _isLoading
-                    ? const CircularProgressIndicator()
+                    ? const LoadingIndicator(size: 30)
                     : Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          TextButton(
+                          TextButton.icon(
                             onPressed: () =>
                                 Navigator.pushNamed(context, '/login'),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.arrow_back,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                                const SizedBox(width: 4),
-                                const Text(
-                                  "Retour",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                              ],
+                            icon: Icon(
+                              Icons.arrow_back,
+                              color: colorScheme.primary,
+                            ),
+                            label: const Text(
+                              "Retour",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
                             ),
                           ),
                           OutlinedButton(
                             onPressed: _register,
                             style: OutlinedButton.styleFrom(
-                              foregroundColor:
-                                  Theme.of(context).colorScheme.secondary,
+                              foregroundColor: colorScheme.secondary,
                               side: BorderSide(
-                                color: Theme.of(context).colorScheme.secondary,
+                                color: colorScheme.secondary,
                                 width: 2,
                               ),
                               padding: const EdgeInsets.symmetric(
@@ -195,8 +195,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 const SizedBox(width: 8),
                                 Icon(
                                   Icons.arrow_forward,
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
+                                  color: colorScheme.secondary,
                                 ),
                               ],
                             ),
@@ -209,5 +208,13 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 }

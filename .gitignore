@@ -5,6 +5,7 @@
 /HelloWorlders_php/logs/*
 /HelloWorlders_php/www/.idea/*
 /HelloWorlders_php/www/vendor/*
+/HelloWorlders_php/www/public/uploads/*
 /HelloWorlders_php/www/var/*
 .DS_Store
 /HelloWorlders_php/buildtest

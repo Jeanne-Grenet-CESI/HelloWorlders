@@ -69,13 +69,18 @@ class ApiExpatriateController {
 
         $country = ExpatriateController::calculCountry($json->Latitude, $json->Longitude);
         $username = $jwtresult["data"]->Username;
+        
+        $departureDateObj = null;
+        if (isset($json->DepartureDate) && $json->DepartureDate !== null) {
+            $departureDateObj = new \DateTime($json->DepartureDate);
+        }
 
         $expatriate = new Expatriate();
         $expatriate->setFirstname( $json->Firstname)
             ->setLastname($json->Lastname)
             ->setEmail($json->Email)
             ->setArrivalDate(new \DateTime($json->ArrivalDate))
-            ->setDepartureDate(new \DateTime($json->DepartureDate))
+            ->setDepartureDate($departureDateObj)
             ->setLatitude($json->Latitude)
             ->setLongitude($json->Longitude)
             ->setCountry($country)

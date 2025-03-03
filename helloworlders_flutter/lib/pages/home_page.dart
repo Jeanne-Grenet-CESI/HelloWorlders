@@ -3,6 +3,9 @@ import 'package:helloworlders_flutter/repositories/expatriate_repository.dart';
 import 'package:helloworlders_flutter/widget/custom_app_bar.dart';
 import 'package:helloworlders_flutter/widget/expatriate_resume.dart';
 import 'package:helloworlders_flutter/widget/filter_section.dart';
+import 'package:helloworlders_flutter/widget/loading_indicator.dart';
+import 'package:helloworlders_flutter/widget/error_display.dart';
+import 'package:helloworlders_flutter/widget/empty_state_display.dart';
 import 'package:helloworlders_flutter/services/expatriate_service.dart';
 import 'package:helloworlders_flutter/models/expatriate.dart';
 import 'package:intl/intl.dart';
@@ -57,7 +60,9 @@ class _HomePageState extends State<HomePage> {
           countries = uniqueCountries.toList()..sort();
         });
       }
-    } catch (e) {}
+    } catch (e) {
+      // Ne rien faire en cas d'erreur
+    }
   }
 
   Future<void> fetchExpatriates({bool isLoadMore = false}) async {
@@ -178,58 +183,21 @@ class _HomePageState extends State<HomePage> {
     fetchExpatriates();
   }
 
-  Future<void> _selectDate(BuildContext context, bool isStartDate) async {
-    DateTime initialDate;
-    DateTime firstDate;
-
-    if (isStartDate) {
-      initialDate = filterStartDate ?? DateTime.now();
-      firstDate = DateTime(2000);
-    } else {
-      if (filterStartDate != null) {
-        initialDate = filterEndDate ?? filterStartDate!;
-        firstDate = filterStartDate!;
-      } else {
-        initialDate = filterEndDate ?? DateTime.now();
-        firstDate = DateTime(2000);
-      }
-    }
-
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: initialDate,
-      firstDate: firstDate,
-      lastDate: DateTime(2101),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: Theme.of(context).colorScheme.primary,
-              onPrimary: Colors.white,
-              onSurface: Colors.black,
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
-
-    if (picked != null) {
-      setState(() {
-        if (isStartDate) {
-          filterStartDate = picked;
-          if (filterEndDate != null && filterEndDate!.isBefore(picked)) {
-            filterEndDate = null;
-          }
-        } else {
-          filterEndDate = picked;
+  void _handleDateSelected(DateTime date, bool isStartDate) {
+    setState(() {
+      if (isStartDate) {
+        filterStartDate = date;
+        if (filterEndDate != null && filterEndDate!.isBefore(date)) {
+          filterEndDate = null;
         }
-        currentPage = 0;
-        expatriates = [];
-        hasMoreData = true;
-      });
-      fetchExpatriates();
-    }
+      } else {
+        filterEndDate = date;
+      }
+      currentPage = 0;
+      expatriates = [];
+      hasMoreData = true;
+    });
+    fetchExpatriates();
   }
 
   void _resetDateFilters() {
@@ -245,47 +213,23 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildContent() {
     if (isLoading && expatriates.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
+      return const LoadingIndicator();
     }
 
     if (errorMessage.isNotEmpty && expatriates.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              errorMessage,
-              style: const TextStyle(color: Colors.red),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _refresh,
-              child: const Text('Réessayer'),
-            ),
-          ],
-        ),
+      return ErrorDisplay(
+        errorMessage: errorMessage,
+        onRetry: _refresh,
       );
     }
 
     if (expatriates.isEmpty &&
         (selectedCountry != null || filterStartDate != null)) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "Aucun profil ne correspond aux critères sélectionnés",
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Theme.of(context).colorScheme.primary),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _resetAllFilters,
-              child: const Text('Réinitialiser les filtres'),
-            ),
-          ],
-        ),
+      return EmptyStateDisplay(
+        message: "Aucun profil ne correspond aux critères sélectionnés",
+        icon: Icons.search_off,
+        actionButtonText: 'Réinitialiser les filtres',
+        onActionPressed: _resetAllFilters,
       );
     }
 
@@ -300,7 +244,7 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: Center(
                 child: isLoadingMore
-                    ? const CircularProgressIndicator()
+                    ? const LoadingIndicator(size: 24, strokeWidth: 2)
                     : hasMoreData
                         ? const Text('Chargement...')
                         : const Text('Plus aucun profil à charger'),
@@ -347,7 +291,38 @@ class _HomePageState extends State<HomePage> {
               isLoading: isLoading,
               onCountryChanged: _handleCountryChanged,
               onClearCountry: _handleClearCountry,
-              onSelectDate: _selectDate,
+              onSelectDate: (context, isStartDate) async {
+                final DateTime now = DateTime.now();
+                final DateTime initialDate = isStartDate
+                    ? (filterStartDate ?? now)
+                    : (filterEndDate ?? now);
+                final DateTime firstDate = isStartDate
+                    ? DateTime(2000)
+                    : (filterStartDate ?? DateTime(2000));
+
+                final DateTime? picked = await showDatePicker(
+                  context: context,
+                  initialDate: initialDate,
+                  firstDate: firstDate,
+                  lastDate: DateTime(2101),
+                  builder: (context, child) {
+                    return Theme(
+                      data: Theme.of(context).copyWith(
+                        colorScheme: ColorScheme.light(
+                          primary: Theme.of(context).colorScheme.primary,
+                          onPrimary: Colors.white,
+                          onSurface: Colors.black,
+                        ),
+                      ),
+                      child: child!,
+                    );
+                  },
+                );
+
+                if (picked != null) {
+                  _handleDateSelected(picked, isStartDate);
+                }
+              },
               onResetDateFilters: _resetDateFilters,
               onResetAllFilters: _resetAllFilters,
             ),
