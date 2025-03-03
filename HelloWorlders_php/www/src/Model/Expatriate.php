@@ -269,6 +269,11 @@ class Expatriate  implements \JsonSerializable
         $request->bindValue(':Id', $Id);
         $request->execute();
         $expatriateSql = $request->fetch(\PDO::FETCH_ASSOC);
+
+        if (!$expatriateSql) {
+            return null;
+        }
+
         $expatriate = new Expatriate();
         $expatriate->setId($expatriateSql["Id"])
             ->setFirstname($expatriateSql["Firstname"])
