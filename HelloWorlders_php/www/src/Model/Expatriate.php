@@ -387,11 +387,11 @@ class Expatriate  implements \JsonSerializable
         if ($country !== null) {
             $sql .= ' AND Country = :country';
         }
-        
+
         if ($startDate !== null && $endDate !== null) {
             $sql .= ' AND (ArrivalDate <= :endDate) AND (DepartureDate >= :startDate OR DepartureDate IS NULL)';
         } else if ($startDate !== null) {
-            $sql .= ' AND (DepartureDate >= :startDate OR DepartureDate IS NULL)';
+            $sql .= ' AND ((ArrivalDate >= :startDate) OR (DepartureDate >= :startDate OR DepartureDate IS NULL))';
         } else if ($endDate !== null) {
             $sql .= ' AND (ArrivalDate <= :endDate)';
         }

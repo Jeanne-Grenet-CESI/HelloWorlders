@@ -60,9 +60,7 @@ class _HomePageState extends State<HomePage> {
           countries = uniqueCountries.toList()..sort();
         });
       }
-    } catch (e) {
-      // Ne rien faire en cas d'erreur
-    }
+    } catch (e) {}
   }
 
   Future<void> fetchExpatriates({bool isLoadMore = false}) async {
@@ -80,17 +78,12 @@ class _HomePageState extends State<HomePage> {
     });
 
     try {
-      DateTime? endDateParam = filterEndDate;
-      if (filterStartDate == null) {
-        endDateParam = null;
-      }
-
       final response = await expatriateRepository.getAll(
         isLoadMore: isLoadMore,
         page: currentPage,
         country: selectedCountry,
         startDate: filterStartDate,
-        endDate: endDateParam,
+        endDate: filterEndDate,
       );
 
       if (mounted) {
@@ -224,7 +217,9 @@ class _HomePageState extends State<HomePage> {
     }
 
     if (expatriates.isEmpty &&
-        (selectedCountry != null || filterStartDate != null)) {
+        (selectedCountry != null ||
+            filterStartDate != null ||
+            filterEndDate != null)) {
       return EmptyStateDisplay(
         message: "Aucun profil ne correspond aux critères sélectionnés",
         icon: Icons.search_off,
@@ -293,34 +288,57 @@ class _HomePageState extends State<HomePage> {
               onClearCountry: _handleClearCountry,
               onSelectDate: (context, isStartDate) async {
                 final DateTime now = DateTime.now();
-                final DateTime initialDate = isStartDate
-                    ? (filterStartDate ?? now)
-                    : (filterEndDate ?? now);
-                final DateTime firstDate = isStartDate
-                    ? DateTime(2000)
-                    : (filterStartDate ?? DateTime(2000));
-
-                final DateTime? picked = await showDatePicker(
-                  context: context,
-                  initialDate: initialDate,
-                  firstDate: firstDate,
-                  lastDate: DateTime(2101),
-                  builder: (context, child) {
-                    return Theme(
-                      data: Theme.of(context).copyWith(
-                        colorScheme: ColorScheme.light(
-                          primary: Theme.of(context).colorScheme.primary,
-                          onPrimary: Colors.white,
-                          onSurface: Colors.black,
+                if (isStartDate) {
+                  final DateTime initialDate = filterStartDate ?? now;
+                  final DateTime? picked = await showDatePicker(
+                    context: context,
+                    initialDate: initialDate,
+                    firstDate: DateTime(2000),
+                    lastDate: DateTime(2101),
+                    builder: (context, child) {
+                      return Theme(
+                        data: Theme.of(context).copyWith(
+                          colorScheme: ColorScheme.light(
+                            primary: Theme.of(context).colorScheme.primary,
+                            onPrimary: Colors.white,
+                            onSurface: Colors.black,
+                          ),
                         ),
-                      ),
-                      child: child!,
-                    );
-                  },
-                );
+                        child: child!,
+                      );
+                    },
+                  );
 
-                if (picked != null) {
-                  _handleDateSelected(picked, isStartDate);
+                  if (picked != null) {
+                    _handleDateSelected(picked, true);
+                  }
+                } else {
+                  final DateTime firstDate = filterStartDate ?? DateTime(2000);
+                  final DateTime initialDate =
+                      filterEndDate ?? (filterStartDate ?? now);
+
+                  final DateTime? picked = await showDatePicker(
+                    context: context,
+                    initialDate: initialDate,
+                    firstDate: firstDate,
+                    lastDate: DateTime(2101),
+                    builder: (context, child) {
+                      return Theme(
+                        data: Theme.of(context).copyWith(
+                          colorScheme: ColorScheme.light(
+                            primary: Theme.of(context).colorScheme.primary,
+                            onPrimary: Colors.white,
+                            onSurface: Colors.black,
+                          ),
+                        ),
+                        child: child!,
+                      );
+                    },
+                  );
+
+                  if (picked != null) {
+                    _handleDateSelected(picked, false);
+                  }
                 }
               },
               onResetDateFilters: _resetDateFilters,

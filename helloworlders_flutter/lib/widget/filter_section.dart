@@ -74,8 +74,9 @@ class _FilterSectionState extends State<FilterSection>
 
   @override
   Widget build(BuildContext context) {
-    bool hasActiveFilters =
-        widget.selectedCountry != null || widget.filterStartDate != null;
+    bool hasActiveFilters = widget.selectedCountry != null ||
+        widget.filterStartDate != null ||
+        widget.filterEndDate != null;
 
     return Container(
       decoration: BoxDecoration(
@@ -272,7 +273,7 @@ class _FilterSectionState extends State<FilterSection>
                                         widget.filterStartDate != null
                                             ? dateFormatter
                                                 .format(widget.filterStartDate!)
-                                            : "Date de début *",
+                                            : "Date de début",
                                         style: TextStyle(
                                           color: widget.filterStartDate != null
                                               ? Colors.black
@@ -297,35 +298,15 @@ class _FilterSectionState extends State<FilterSection>
                           ),
                           Expanded(
                             child: GestureDetector(
-                              onTap: widget.filterStartDate != null
-                                  ? () => widget.onSelectDate(context, false)
-                                  : () {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: const Text(
-                                              'Veuillez d\'abord sélectionner une date de début'),
-                                          backgroundColor: Theme.of(context)
-                                              .colorScheme
-                                              .secondary,
-                                          behavior: SnackBarBehavior.floating,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                          margin: const EdgeInsets.all(16),
-                                        ),
-                                      );
-                                    },
+                              onTap: () => widget.onSelectDate(context, false),
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
                                     vertical: 10, horizontal: 12),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(8),
                                   border: Border.all(
-                                    color: widget.filterStartDate != null
-                                        ? Theme.of(context).colorScheme.primary
-                                        : Colors.grey,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                   ),
                                 ),
                                 child: Row(
@@ -333,11 +314,8 @@ class _FilterSectionState extends State<FilterSection>
                                     Icon(
                                       Icons.event,
                                       size: 16,
-                                      color: widget.filterStartDate != null
-                                          ? Theme.of(context)
-                                              .colorScheme
-                                              .primary
-                                          : Colors.grey,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                     ),
                                     const SizedBox(width: 6),
                                     Expanded(
@@ -349,9 +327,7 @@ class _FilterSectionState extends State<FilterSection>
                                         style: TextStyle(
                                           color: widget.filterEndDate != null
                                               ? Colors.black
-                                              : (widget.filterStartDate != null
-                                                  ? Colors.grey
-                                                  : Colors.grey),
+                                              : Colors.grey,
                                           fontSize: 14,
                                         ),
                                         overflow: TextOverflow.ellipsis,
