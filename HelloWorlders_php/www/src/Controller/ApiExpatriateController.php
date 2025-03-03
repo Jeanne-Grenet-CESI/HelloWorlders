@@ -23,8 +23,10 @@ class ApiExpatriateController {
         $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : null;
         $offset = isset($_GET['offset']) ? (int)$_GET['offset'] : null;
         $country = isset($_GET['country']) ? $_GET['country'] : null;
+        $startDate = isset($_GET['startDate']) ? $_GET['startDate'] : null;
+        $endDate = isset($_GET['endDate']) ? $_GET['endDate'] : null;
 
-        $expatriates = Expatriate::SqlGetAllFiltered($limit, $offset, $country);
+        $expatriates = Expatriate::SqlGetAllFiltered($limit, $offset, $country, $startDate, $endDate);
         return json_encode($expatriates);
     }
 

@@ -375,12 +375,20 @@ class Expatriate  implements \JsonSerializable
         return $expatriates;
     }
 
-    public static function SqlGetAllFiltered($limit = null, $offset = null, $country = null)
+    public static function SqlGetAllFiltered($limit = null, $offset = null, $country = null, $startDate = null, $endDate = null)
     {
-        $sql = 'SELECT * FROM expatriate';
+        $sql = 'SELECT * FROM expatriate WHERE 1=1';
 
         if ($country !== null) {
-            $sql .= ' WHERE Country = :country';
+            $sql .= ' AND Country = :country';
+        }
+        
+        if ($startDate !== null && $endDate !== null) {
+            $sql .= ' AND (ArrivalDate <= :endDate) AND (DepartureDate >= :startDate OR DepartureDate IS NULL)';
+        } else if ($startDate !== null) {
+            $sql .= ' AND (DepartureDate >= :startDate OR DepartureDate IS NULL)';
+        } else if ($endDate !== null) {
+            $sql .= ' AND (ArrivalDate <= :endDate)';
         }
 
         $sql .= ' ORDER BY Id DESC';
@@ -393,6 +401,14 @@ class Expatriate  implements \JsonSerializable
 
         if ($country !== null) {
             $request->bindValue(':country', $country);
+        }
+
+        if ($startDate !== null) {
+            $request->bindValue(':startDate', $startDate);
+        }
+
+        if ($endDate !== null) {
+            $request->bindValue(':endDate', $endDate);
         }
 
         if ($limit !== null && $offset !== null) {

@@ -10,12 +10,24 @@ class ApiExpatriateService {
     required int limit,
     required int offset,
     String? country,
+    DateTime? startDate,
+    DateTime? endDate,
   }) async {
     String url =
         "${dotenv.env['API_URL']}/ApiExpatriate/getAll?limit=$limit&offset=$offset";
 
     if (country != null && country.isNotEmpty) {
       url += "&country=$country";
+    }
+
+    if (startDate != null) {
+      String formattedStartDate = startDate.toIso8601String().split('T')[0];
+      url += "&startDate=$formattedStartDate";
+    }
+
+    if (endDate != null) {
+      String formattedEndDate = endDate.toIso8601String().split('T')[0];
+      url += "&endDate=$formattedEndDate";
     }
 
     try {

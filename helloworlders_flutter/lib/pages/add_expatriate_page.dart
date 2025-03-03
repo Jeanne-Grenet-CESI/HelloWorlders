@@ -199,7 +199,6 @@ class _AddExpatriatePageState extends State<AddExpatriatePage> {
   @override
   Widget build(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
-    final Color lightGreen = colorScheme.primary.withOpacity(0.2);
 
     return Scaffold(
       appBar: const CustomAppBar(),
@@ -244,7 +243,8 @@ class _AddExpatriatePageState extends State<AddExpatriatePage> {
                                 onTap: _pickImage,
                                 child: CircleAvatar(
                                   radius: 50,
-                                  backgroundColor: lightGreen,
+                                  backgroundColor:
+                                      colorScheme.primary.withAlpha(70),
                                   backgroundImage: _profileImage != null
                                       ? FileImage(_profileImage!)
                                       : null,
