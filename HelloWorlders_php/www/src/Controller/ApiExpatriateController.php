@@ -9,13 +9,12 @@ class ApiExpatriateController {
 
     public function __construct()
     {
-        // Définit le type de contenu pour toutes les réponses JSON
+
         header('Content-Type: application/json; charset=utf-8');
     }
 
     public function getAll()
     {
-        
         if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
             header('HTTP/1.1 405 Method Not Allowed');
             return json_encode(["status" => "error", "message" => "Méthode non autorisée, GET attendu"]);
@@ -23,8 +22,11 @@ class ApiExpatriateController {
 
         $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : null;
         $offset = isset($_GET['offset']) ? (int)$_GET['offset'] : null;
+        $country = isset($_GET['country']) ? $_GET['country'] : null;
+        $startDate = isset($_GET['startDate']) ? $_GET['startDate'] : null;
+        $endDate = isset($_GET['endDate']) ? $_GET['endDate'] : null;
 
-        $expatriates = Expatriate::SqlGetAll($limit, $offset);
+        $expatriates = Expatriate::SqlGetAllFiltered($limit, $offset, $country, $startDate, $endDate);
         return json_encode($expatriates);
     }
 
@@ -144,12 +146,10 @@ class ApiExpatriateController {
 
             $imageName = uniqid() . ".jpg";
 
-            // Sauvegarde de la nouvelle image
             $ifp = fopen($repository . '/' . $imageName, "wb");
             fwrite($ifp, base64_decode($json->Image));
             fclose($ifp);
 
-            // Suppression de l'ancienne image
             $oldImagePath = "./uploads/images/{$expatriate->getImageRepository()}/{$expatriate->getImageFileName()}";
             if (file_exists($oldImagePath)) {
                 unlink($oldImagePath);

@@ -12,6 +12,9 @@ class ExpatriateRepository {
   Future<Map<String, dynamic>> getAll({
     bool isLoadMore = false,
     required int page,
+    String? country,
+    DateTime? startDate,
+    DateTime? endDate,
   }) async {
     try {
       final offset = page * _limit;
@@ -19,6 +22,9 @@ class ExpatriateRepository {
       List<dynamic> response = await apiExpatriateService.getAll(
         limit: _limit,
         offset: offset,
+        country: country,
+        startDate: startDate,
+        endDate: endDate,
       );
 
       if (response.isEmpty) {

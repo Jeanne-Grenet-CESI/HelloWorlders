@@ -375,6 +375,74 @@ class Expatriate  implements \JsonSerializable
         return $expatriates;
     }
 
+    public static function SqlGetAllFiltered($limit = null, $offset = null, $country = null, $startDate = null, $endDate = null)
+    {
+        $sql = 'SELECT * FROM expatriate WHERE 1=1';
+
+        if ($country !== null) {
+            $sql .= ' AND Country = :country';
+        }
+        
+        if ($startDate !== null && $endDate !== null) {
+            $sql .= ' AND (ArrivalDate <= :endDate) AND (DepartureDate >= :startDate OR DepartureDate IS NULL)';
+        } else if ($startDate !== null) {
+            $sql .= ' AND (DepartureDate >= :startDate OR DepartureDate IS NULL)';
+        } else if ($endDate !== null) {
+            $sql .= ' AND (ArrivalDate <= :endDate)';
+        }
+
+        $sql .= ' ORDER BY Id DESC';
+
+        if ($limit !== null && $offset !== null) {
+            $sql .= ' LIMIT :limit OFFSET :offset';
+        }
+
+        $request = BDD::getInstance()->prepare($sql);
+
+        if ($country !== null) {
+            $request->bindValue(':country', $country);
+        }
+
+        if ($startDate !== null) {
+            $request->bindValue(':startDate', $startDate);
+        }
+
+        if ($endDate !== null) {
+            $request->bindValue(':endDate', $endDate);
+        }
+
+        if ($limit !== null && $offset !== null) {
+            $request->bindValue(':limit', (int) $limit, \PDO::PARAM_INT);
+            $request->bindValue(':offset', (int) $offset, \PDO::PARAM_INT);
+        }
+
+        $request->execute();
+        $expatriatesSql = $request->fetchAll(\PDO::FETCH_ASSOC);
+        $expatriatesObjet = [];
+
+        foreach ($expatriatesSql as $expatriateSql) {
+            $expatriate = new Expatriate();
+            $expatriate->setId($expatriateSql['Id'])
+                ->setFirstname($expatriateSql['Firstname'])
+                ->setLastname($expatriateSql['Lastname'])
+                ->setEmail($expatriateSql['Email'])
+                ->setArrivalDate(new \DateTime($expatriateSql['ArrivalDate']))
+                ->setDepartureDate(!empty($expatriateSql['DepartureDate']) ? new \DateTime($expatriateSql['DepartureDate']) : null)
+                ->setLatitude($expatriateSql['Latitude'])
+                ->setLongitude($expatriateSql['Longitude'])
+                ->setCountry($expatriateSql['Country'])
+                ->setImageRepository($expatriateSql['ImageRepository'])
+                ->setImageFileName($expatriateSql['ImageFileName'])
+                ->setAge($expatriateSql['Age'])
+                ->setUsername($expatriateSql['Username'])
+                ->setDescription($expatriateSql['Description'])
+                ->setGender($expatriateSql['Gender']);
+            $expatriatesObjet[] = $expatriate;
+        }
+
+        return $expatriatesObjet;
+    }
+
 
 
     public function jsonSerialize(): mixed
