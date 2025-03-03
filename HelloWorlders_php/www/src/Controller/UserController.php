@@ -11,6 +11,10 @@ class UserController extends AbstractController
     public function create()
     {
         if (isset($_POST["mail"]) && isset($_POST["password"]) && isset($_POST["username"])) {
+            if (!$this->isValidCsrfToken()) {
+                throw new \Exception("Invalid CSRF token");
+            }
+
             $user = new User();
             $hashpass = password_hash($_POST["password"], PASSWORD_BCRYPT, ["cost" => 12]);
 
@@ -51,7 +55,6 @@ class UserController extends AbstractController
         if (!isset($_SESSION["login"]) || !$_SESSION["login"]["IsAdmin"]) {
             throw new \Exception("Vous n'êtes pas autorisé à accéder à cette page ou cette fonctionnalité");
         }
-
     }
 
     public function logout()
@@ -63,17 +66,23 @@ class UserController extends AbstractController
     public function login()
     {
         if (isset($_POST["mail"]) && isset($_POST["password"])) {
+
+            if (!$this->isValidCsrfToken()) {
+                throw new \Exception("Invalid CSRF token");
+            }
+
             $user = User::SqlGetByMail($_POST["mail"]);
             if ($user != null) {
-
                 if (password_verify($_POST["password"], $user->getPassword())) {
-
+                    session_regenerate_id(true);
 
                     $_SESSION["login"] = [
                         "Email" => $user->getEmail(),
                         "Username" => $user->getUsername(),
                         "IsAdmin" => $user->getIsAdmin()
                     ];
+
+                    $this->csrfTokenService->refreshToken();
 
                     header("Location: /");
                 } else {
@@ -95,7 +104,6 @@ class UserController extends AbstractController
             return json_encode(["status" => "error", "message" => "Méthode non autorisée, POST attendu"]);
         }
 
-        //Récupération du body en JSON
         $data = file_get_contents('php://input');
         $json = json_decode($data);
 
@@ -161,7 +169,7 @@ class UserController extends AbstractController
         $user->setUsername($json["Username"])
             ->setEmail($json["Email"])
             ->setPassword($hashpass)
-            ->setIsAdmin(false); 
+            ->setIsAdmin(false);
 
         $id = User::SqlAdd($user);
 
@@ -181,6 +189,7 @@ class UserController extends AbstractController
         $expatriates = Expatriate::SqlGetByUser($user->getUsername());
         return $this->twig->render("User/account.html.twig", ['expatriates' => $expatriates, 'user' => $user]);
     }
+
     public function apiAccount()
     {
         ini_set('display_errors', 0);
@@ -243,5 +252,4 @@ class UserController extends AbstractController
         }
         exit;
     }
-
 }
