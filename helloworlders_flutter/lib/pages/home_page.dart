@@ -21,6 +21,8 @@ class _HomePageState extends State<HomePage> {
   String errorMessage = '';
   final ScrollController _scrollController = ScrollController();
   int currentPage = 0;
+  String? selectedCountry;
+  List<String> countries = [];
 
   @override
   void initState() {
@@ -29,6 +31,27 @@ class _HomePageState extends State<HomePage> {
         ExpatriateRepository(apiExpatriateService: ApiExpatriateService());
     fetchExpatriates();
     _scrollController.addListener(_onScroll);
+    loadCountries();
+  }
+
+  Future<void> loadCountries() async {
+    try {
+      final response = await expatriateRepository.getAll(page: 0);
+      if (response["status"] == "success") {
+        Set<String> uniqueCountries = {};
+        for (var expatriate in response["expatriates"]) {
+          if (expatriate.country != null &&
+              expatriate.country.isNotEmpty &&
+              expatriate.country != "Non spécifié") {
+            uniqueCountries.add(expatriate.country);
+          }
+        }
+
+        setState(() {
+          countries = uniqueCountries.toList()..sort();
+        });
+      }
+    } catch (e) {}
   }
 
   Future<void> fetchExpatriates({bool isLoadMore = false}) async {
@@ -49,6 +72,7 @@ class _HomePageState extends State<HomePage> {
       final response = await expatriateRepository.getAll(
         isLoadMore: isLoadMore,
         page: currentPage,
+        country: selectedCountry,
       );
 
       if (mounted) {
@@ -151,6 +175,70 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _buildCountryFilter() {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12,
+      ),
+      decoration: BoxDecoration(
+        border: Border.all(color: Theme.of(context).colorScheme.primary),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    isExpanded: true,
+                    hint: const Text("Sélectionner un pays"),
+                    value: selectedCountry,
+                    items: [
+                      const DropdownMenuItem<String>(
+                        value: null,
+                        child: Text("Tous les pays"),
+                      ),
+                      ...countries
+                          .map((country) => DropdownMenuItem<String>(
+                                value: country,
+                                child: Text(country),
+                              ))
+                          .toList(),
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        selectedCountry = value;
+                        currentPage = 0;
+                        expatriates = [];
+                        hasMoreData = true;
+                      });
+                      fetchExpatriates();
+                    },
+                  ),
+                ),
+              ),
+              if (selectedCountry != null)
+                IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () {
+                    setState(() {
+                      selectedCountry = null;
+                      currentPage = 0;
+                      expatriates = [];
+                      hasMoreData = true;
+                    });
+                    fetchExpatriates();
+                  },
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -172,6 +260,8 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 20),
+            _buildCountryFilter(),
+            const SizedBox(height: 10),
             Expanded(child: _buildContent()),
           ],
         ),

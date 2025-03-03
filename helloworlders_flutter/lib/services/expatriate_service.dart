@@ -9,9 +9,14 @@ class ApiExpatriateService {
   Future<List<dynamic>> getAll({
     required int limit,
     required int offset,
+    String? country,
   }) async {
     String url =
         "${dotenv.env['API_URL']}/ApiExpatriate/getAll?limit=$limit&offset=$offset";
+
+    if (country != null && country.isNotEmpty) {
+      url += "&country=$country";
+    }
 
     try {
       final http.Response response = await http.get(
