@@ -157,9 +157,16 @@ class UserController extends AbstractController
             exit();
         }
 
-        if (User::SqlGetByMail($json["Email"]) !== null) {
+        $existence = User::checkUserExistence($json["Email"], $json["Username"]);
+
+        if ($existence["emailExists"]) {
             header('HTTP/1.1 409 Conflict');
             echo json_encode(["status" => "error", "message" => "Cet email est déjà utilisé"]);
+            exit();
+        }
+        if ($existence["usernameExists"]) {
+            header('HTTP/1.1 409 Conflict');
+            echo json_encode(["status" => "error", "message" => "Ce nom d'utilisateur est déjà utilisé"]);
             exit();
         }
 
