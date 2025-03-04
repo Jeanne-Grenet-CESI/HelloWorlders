@@ -101,4 +101,26 @@ class User
         }
         return null;
     }
+
+    public static function checkUserExistence($email, $username): array
+    {
+        $request = BDD::getInstance()->prepare("SELECT Email, Username FROM user WHERE Email=:email OR Username=:username");
+        $request->execute([
+            "email" => $email,
+            "username" => $username
+        ]);
+
+        $result = ["emailExists" => false, "usernameExists" => false];
+
+        while ($data = $request->fetch(\PDO::FETCH_ASSOC)) {
+            if ($data["Email"] === $email) {
+                $result["emailExists"] = true;
+            }
+            if ($data["Username"] === $username) {
+                $result["usernameExists"] = true;
+            }
+        }
+
+        return $result;
+    }
 }
