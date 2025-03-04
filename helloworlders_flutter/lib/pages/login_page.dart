@@ -55,7 +55,8 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.pushReplacementNamed(context, "/home");
     } else {
       setState(() {
-        _errorMessage = response["message"];
+        _errorMessage =
+            "Identifiant ou mot de passe incorrect. Veuillez réessayer.";
       });
     }
   }
